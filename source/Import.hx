@@ -1,0 +1,28 @@
+package;
+
+#if !macro
+
+// Engine
+import core.Settings;
+import core.Controls;
+import core.Conductor;
+import util.debug.Log;
+import util.debug.DiscordClient;
+
+// Flixel
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import flixel.math.FlxPoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.addons.transition.FlxTransitionableState;
+
+using StringTools;
+#end

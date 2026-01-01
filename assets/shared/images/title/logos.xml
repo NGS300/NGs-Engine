@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="logos.png">
+	<!-- Created with Adobe Animate version 24.0.12.3 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="bump00000" x="0" y="0" width="1177" height="662" frameX="-22" frameY="-16" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00001" x="1177" y="0" width="1236" height="695"/>
+	<SubTexture name="bump00002" x="1177" y="0" width="1236" height="695"/>
+	<SubTexture name="bump00003" x="2413" y="0" width="1200" height="675" frameX="-14" frameY="-10" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00004" x="2413" y="0" width="1200" height="675" frameX="-14" frameY="-10" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00005" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00006" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00007" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00008" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00009" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00010" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00011" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00012" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00013" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump00014" x="0" y="695" width="1191" height="670" frameX="-17" frameY="-12" frameWidth="1236" frameHeight="695"/>
+	<SubTexture name="bump10000" x="1191" y="695" width="1038" height="1037" frameX="-23" frameY="-18" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10001" x="2229" y="695" width="1090" height="1091"/>
+	<SubTexture name="bump10002" x="2229" y="695" width="1090" height="1091"/>
+	<SubTexture name="bump10003" x="0" y="1786" width="1059" height="1059" frameX="-14" frameY="-11" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10004" x="0" y="1786" width="1059" height="1059" frameX="-14" frameY="-11" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10005" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10006" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10007" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10008" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10009" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10010" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10011" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10012" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10013" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+	<SubTexture name="bump10014" x="1059" y="1786" width="1051" height="1051" frameX="-17" frameY="-13" frameWidth="1090" frameHeight="1091"/>
+</TextureAtlas>

@@ -1,0 +1,6 @@
+# Ignore things
+export/
+.haxelib/
+.vscode/*
+.github/
+.git/
