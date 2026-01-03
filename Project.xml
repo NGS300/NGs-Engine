@@ -12,8 +12,7 @@
 		preloader="flixel.system.FlxPreloader"
 	/>
 
-	<!--<haxedef
-	name="CHARTING" />-->
+	<haxedef name="CHARTING" />
 
 	<!-- Identifiers & Metadata -->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
