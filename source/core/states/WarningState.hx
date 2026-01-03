@@ -12,10 +12,11 @@ class WarningState extends BeatState {
 		texts.alpha = 0;
 		add(texts);
 
-		var warnText = new FlxText(0, 0, FlxG.width, "WARNING!\n\n");
-		warnText.text += 'This Mod contains Flashing Lights, which MAY CAUSE DISCOMFORT OR ISSUES for some players.\n';
-		warnText.text += 'To ensure a SAFER EXPERIENCE, it is recommended to disable these effects.\n';
-		warnText.text += 'Would you like to DISABLE the Flashing Lights?';
+		var warnText = new FlxText(0, 0, FlxG.width, LanguageManager.get("warning_text"));
+		// warnText.text += 'This Mod contains Flashing Lights, which MAY CAUSE DISCOMFORT OR ISSUES for some players.\n';
+		// warnText.text += 'To ensure a SAFER EXPERIENCE, it is recommended to disable these effects.\n';
+		// warnText.text += 'Would you like to DISABLE the Flashing Lights?';
+		// for (LanguageManager.getRaw("warning.warning_text"))
 		warnText.setFormat(Paths.font("fredoka_One"), 22, FlxColor.WHITE, CENTER);
 		warnText.antialiasing = Settings.data.antialiasing;
 		warnText.y = (FlxG.height - warnText.height) / 2.4;
@@ -59,32 +60,32 @@ class WarningState extends BeatState {
 		if (controls.ACCEPT || back) {
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;
-            if (!back) {
-                FlxG.sound.play(Paths.sound("confirmMenu"));
-                var button = texts.members[isYes ? 1 : 2];
-                flixel.effects.FlxFlicker.flicker(button, 0.8, 0.1, false, true, function(_) {
-                    FlxTween.tween(texts, {alpha: 0}, 0.25, {
+			if (!back) {
+				FlxG.sound.play(Paths.sound("confirmMenu"));
+				var button = texts.members[isYes ? 1 : 2];
+				flixel.effects.FlxFlicker.flicker(button, 0.8, 0.1, false, true, function(_) {
+					FlxTween.tween(texts, {alpha: 0}, 0.25, {
 						onComplete: (_) -> save(true)
-                    });
-                });
-            } else {
+					});
+				});
+			} else {
 				FlxG.sound.play(Paths.sound("cancelMenu"));
 				FlxTween.tween(texts, {alpha: 0}, 0.4, {
 					onComplete: (_) -> save(false)
 				});
-            }
+			}
 		}
 		super.update(elapsed);
 	}
 
-    function save(disable:Bool) {
+	function save(disable:Bool) {
 		if (disable)
-		    Settings.data.flashing = !isYes;
+			Settings.data.flashing = !isYes;
 		FlxG.save.data.notified = true;
 		Settings.save();
 		changeState(TitleState);
-    }
-    
+	}
+
 	function updateItems() {
 		var yes = texts.members[1];
 		var no = texts.members[2];
@@ -104,11 +105,11 @@ class WarningState extends BeatState {
 		target.scale.set(1.1, 1.1);
 		FlxTween.tween(target.scale, {x: 1, y: 1}, 0.15);
 		if (!isBouce) {
-            FlxTween.tween(selector, {y: selector.y + 4}, 0.6, {
-                type: PINGPONG,
-                ease: FlxEase.sineInOut
-            });
+			FlxTween.tween(selector, {y: selector.y + 4}, 0.6, {
+				type: PINGPONG,
+				ease: FlxEase.sineInOut
+			});
 			isBouce = true;
-        }
+		}
 	}
 }

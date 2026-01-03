@@ -1,0 +1,8 @@
+{
+    "__ENGINE__": {},
+    "warning": {
+        "warning_text": "[WARNING]\n\nThis Mod contains Flashing Lights, which MAY CAUSE DISCOMFORT OR ISSUES for some players.\nTo ensure a SAFER EXPERIENCE, it is recommended to disable these effects.\nWould you like to DISABLE the Flashing Lights?",
+        "warning_accept": "Yes",
+        "warning_ignore": "No"
+    }
+}

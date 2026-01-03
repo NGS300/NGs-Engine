@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<!-- ========================= Application Settings ========================= -->
-	<app 
+	<app
 		main="Main"
 		file="NGsEngine"
 		title="NG's Engine"
@@ -12,7 +12,8 @@
 		preloader="flixel.system.FlxPreloader"
 	/>
 
-	<haxedef name="CHARTING" />
+	<!--<haxedef
+	name="CHARTING" />-->
 
 	<!-- Identifiers & Metadata -->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -20,13 +21,16 @@
 
 	<!-- ========================== Window Settings ============================= -->
 	<!-- Default (all targets) -->
-	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" allow-high-dpi="true" />
+	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false"
+		allow-high-dpi="true" />
 
 	<!-- Platform-specific -->
 	<window if="html5" resizable="true" />
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false" />
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" />
-	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
+	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0"
+		resizable="false" />
+	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0"
+		resizable="true" />
 
 	<!-- =========================== Build Settings ============================= -->
 	<set name="BUILD_DIR" value="export/debug/x64" if="debug" />
@@ -40,8 +44,8 @@
 	<assets path="assets/fonts" />
 	<assets path="assets/shared" exclude="*.ogg" if="web" embed="true" />
 	<assets path="assets/shared" exclude="*.mp3" unless="web" embed="true" />
-	<assets path="assets/base_game" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="assets/base_game" rename="assets" exclude="*.mp3"  unless="web"/>
+	<assets path="assets/base_game" rename="assets" exclude="*.ogg" if="web" />
+	<assets path="assets/base_game" rename="assets" exclude="*.mp3" unless="web" />
 
 	<!-- Extra -->
 	<assets path="docs/EngineFile.json" rename="engine.json" />

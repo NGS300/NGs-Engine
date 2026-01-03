@@ -1,14 +1,13 @@
 package;
 
 #if !macro
-
 // Engine
 import core.Settings;
 import core.Controls;
 import core.Conductor;
 import util.debug.Log;
 import util.debug.DiscordClient;
-
+import util.LanguageManager;
 // Flixel
 import flixel.sound.FlxSound;
 import flixel.FlxG;

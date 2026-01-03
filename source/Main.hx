@@ -14,7 +14,7 @@ class Main extends Sprite {
 	public static final os:PlatformInfo = WindowUtil.platform;
 	static var ramUI:MemoryCounter;
 	static var fpsUI:FPSCounter;
-	
+
 	function main()
 		Lib.current.addChild(new Main());
 
@@ -48,9 +48,10 @@ class Main extends Sprite {
 		}
 		Settings.load();
 		Settings.save();
+		LanguageManager.loadFile(Paths.json("lang/" + Settings.game.language.toString()));
 		DiscordClient.start();
 
-		if (os.isLinux || os.isMac) 
+		if (os.isLinux || os.isMac)
 			Lib.current.stage.window.setIcon(lime.graphics.Image.fromFile("icon.png"));
 
 		if (os.isHtml5) {
