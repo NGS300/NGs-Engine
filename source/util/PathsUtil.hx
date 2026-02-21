@@ -112,7 +112,41 @@ class PathsUtil {
 		return OpenFlAssets.exists(path, type);
 	}
 
-	public static function getPath(file:String, ?type:openfl.utils.AssetType = TEXT, ?folder:String):String {
+	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType = TEXT):String {
+		if (folder != null)
+			return getFolderPath(file, folder);
+
+		if (currentLevel != null && currentLevel != 'shared')
+		{
+			var levelPath = getFolderPath(file, currentLevel);
+			if (OpenFlAssets.exists(levelPath, type))
+				return levelPath;
+		}
+		return getSharedPath(file);
+	}
+
+	inline static public function getFolderPath(file:String, folder = "shared")
+		return 'assets/$folder/$file';
+
+	inline public static function getSharedPath(file = '')
+		return 'assets/shared/$file';
+
+	/*public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType = TEXT):String {
+		if (folder == "shared")
+			return 'assets/shared/$file';
+
+		var dir = (folder != null && folder.trim() != '')
+			? folder
+			: (currentLevel != null && currentLevel.trim() != '' ? currentLevel : null);
+
+		if (dir != null) {
+			var path = 'assets/$dir/$file';
+			if (existsAny(path, type))
+				return path;
+		}
+		return 'assets/shared/$file';
+	}*/
+		/*public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType = TEXT):String {
 		var dir = (folder != null && folder.trim() != '') ? folder : (currentLevel != null
 			&& currentLevel.trim() != '' ? currentLevel : 'shared');
 
@@ -123,7 +157,7 @@ class PathsUtil {
 		}
 
 		return 'assets/shared/$file';
-	}
+	}*/
 
 	inline static public function formatPath(path:String) {
 		final invalidChars = ~/[~&;:<>#\s]/g;
@@ -133,7 +167,7 @@ class PathsUtil {
 
 	public static function font(key:String, ?folder:String, canPrint = true):String {
 		for (ext in ['ttf', 'otf']) {
-			final path = getPath('$key.$ext', TEXT, folder ?? 'fonts');
+			final path = getPath('$key.$ext', folder ?? 'fonts', TEXT);
 			if (existsAny(path, TEXT))
 				return path;
 		}
@@ -146,7 +180,7 @@ class PathsUtil {
 
 	public static function data(key:String, ?folder:String, canPrint = true):String {
 		for (ext in ['json', 'txt']) {
-			final path = getPath('data/$key.$ext', TEXT, folder);
+			final path = getPath('data/$key.$ext', folder, TEXT);
 			if (existsAny(path, TEXT))
 				return path;
 		}
@@ -175,7 +209,7 @@ class PathsUtil {
 
 	public static var currentTrackedSounds:Map<String, Sound> = [];
 	public static function cacheSound(key:String, ?folder:String, canPrint = true) {
-		final path = getPath('$key.$soundFile', SOUND, folder);
+		final path = getPath('$key.$soundFile', folder, SOUND);
 		if (!currentTrackedSounds.exists(path)) {
 			#if sys
 			if (FileSystem.exists(path))
@@ -193,7 +227,7 @@ class PathsUtil {
 	}
 
 	public static function videos(key:String, ?folder:String, canPrint = true):String {
-		final path = getPath('videos/$key.mp4', BINARY, folder ?? 'videos');
+		final path = getPath('videos/$key.mp4', folder ?? 'videos', BINARY);
 		if (existsAny(path, BINARY))
 			return path;
 
@@ -216,27 +250,34 @@ class PathsUtil {
 
 	public static function atlas(key:String, ?folder:String, canPrint = true):FlxAtlasFrames {
 		final img = image(key, folder);
-		for (ext in ['json', 'txt', 'xml']) {
-			final path = getPath('images/$key.$ext', TEXT, folder);
-			if (!existsAny(path, TEXT))
+		for (ext in ["json", "txt", "xml"]) {
+			final path = getPath('images/$key.$ext', folder, TEXT);
+
+			#if sys
+			if (!sys.FileSystem.exists(path) && !OpenFlAssets.exists(path, TEXT))
 				continue;
+			#else
+			if (!OpenFlAssets.exists(path, TEXT))
+				continue;
+			#end
 
 			return switch (ext) {
-				case 'json': FlxAtlasFrames.fromTexturePackerJson(img, path);
-				case 'txt': FlxAtlasFrames.fromSpriteSheetPacker(img, path);
-				case 'xml': FlxAtlasFrames.fromSparrow(img, path);
+				case "json": FlxAtlasFrames.fromTexturePackerJson(img, path);
+				case "txt":  FlxAtlasFrames.fromSpriteSheetPacker(img, path);
+				case "xml":  FlxAtlasFrames.fromSparrow(img, path);
 				default: null;
 			}
 		}
+
 		if (canPrint)
-			Log.info('File atlas not found: ' + key);
+			Log.info('File atlas not found: $key');
 
 		return null;
 	}
 
 	public static function textures(key:String, ?folder:String):Dynamic {
 		for (ext in ['json', 'txt', 'xml']) {
-			if (existsAny(getPath('images/$key.$ext', TEXT, folder), TEXT)) {
+			if (existsAny(getPath('images/$key.$ext', folder, TEXT), TEXT)) {
 				final atl = atlas(key, folder, false);
 				if (atl != null)
 					return atl;
@@ -252,9 +293,10 @@ class PathsUtil {
 		return null;
 	}
 
-	public static function cacheBitmap(key:String, ?folder:String, ?bitmap:BitmapData):FlxGraphic {
+	public static function cacheBitmap(key:String, ?folder:String):FlxGraphic {
+		var bitmap:BitmapData = null;
 		if (bitmap == null) {
-			final file = getPath(key, IMAGE, folder);
+			final file = getPath(key, folder, IMAGE);
 			if (FileSystem.exists(file))
 				bitmap = BitmapData.fromFile(file);
 			else if (OpenFlAssets.exists(file, IMAGE))
@@ -265,7 +307,7 @@ class PathsUtil {
 			}
 		}
 
-		if (Settings.game.allowGPU && bitmap.image != null) {
+		if (true/*Settings.game.allowGPU*/ && bitmap.image != null) {
 			bitmap.lock();
 			if (bitmap.__texture == null) {
 				bitmap.image.premultiplied = true;

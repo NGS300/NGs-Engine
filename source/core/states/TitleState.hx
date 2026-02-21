@@ -1,10 +1,7 @@
 package core.states;
 
-class TitleState extends core.BeatState {
-	/**
-	 * Only play the credits once per session.
-	 */
-	static var initialized = false;
+class TitleState extends BeatState {
+	static var initialized = false; // Only play the credits once per session.
 	var transitioning = false;
 	var skippedIntro = false;
 	
@@ -26,13 +23,14 @@ class TitleState extends core.BeatState {
 		if (!initialized) {
 			persistentUpdate = persistentDraw = true;
 			Settings.load(); // as a precaution
+			KadeEngineData.initSave();
 		}
 
-		/*#if FREEPLAY
-		changeState(FreeplayState);
-		#elseif CHARTING
-		changeState(core.states.editors.ChartingState);
-		#else*/
+		//#if FREEPLAY
+		//changeState(FreeplayState);
+		//#elseif CHARTING
+		//changeState(core.states.editors.ChartingState);
+		//#else
 		if (FlxG.save.data.notified == null) {
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;
@@ -44,12 +42,12 @@ class TitleState extends core.BeatState {
 
 	function startIntro():Void {
 		var i = 'title/';
-		Conductor.newBpm(102);
+		Conductor.changeBPM(102);
 		//Conductor.bpm = 102;
 		persistentUpdate = true;
 
 		if (!initialized && FlxG.sound.music == null)
-			FlxG.sound.playMusic(Paths.music('freakyMenu', 'shared'), 0);
+			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 		FlxG.sound.music.fadeIn(4, 0, 0.7);
 
 		add(new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK).screenCenter());

@@ -1,16 +1,13 @@
 package;
 
-import openfl.utils.AssetType;
 import util.PathsUtil;
 import flash.media.Sound;
+import openfl.utils.AssetType;
 
 /**
 	** A Core class which handles determining asset paths.
  */
 class Paths {
-	inline public static function exists(path:String, ?type:AssetType):Bool
-		return PathsUtil.existsAny(path, type ?? TEXT);
-
 	public static function clearUnusedCache()
 		PathsUtil.clearUnusedMemory();
 
@@ -18,7 +15,7 @@ class Paths {
 		PathsUtil.clearStoredMemory();
 
 	public static function getPath(file:String, ?folder:String, ?type:AssetType):String
-		return PathsUtil.getPath(file, type ?? TEXT, folder);
+		return PathsUtil.getPath(file, folder, type ?? TEXT);
 
 	public static function font(key:String, ?folder:String, print = true):String
 		return PathsUtil.font(key, folder, print);
@@ -28,14 +25,15 @@ class Paths {
 
 	public static function txt(key:String, ?folder:String, print = true):String
 		return PathsUtil.data(key, folder, print);
-		//return PathsUtil.txt(key, folder, print);
 
 	public static function json(key:String, ?folder:String, print = true):String
 		return PathsUtil.data(key, folder, print);
-		//return PathsUtil.json(key, folder, print);
 
 	public static function sound(key:String, ?folder:String, print = true):Sound
 		return PathsUtil.sound(key, folder, print);
+
+	public static function soundRandom(key:String,  min:Int, max:Int, ?folder:String, print = true):Sound
+		return sound(key + FlxG.random.int(min, max), folder);
 
 	public static function music(key:String, ?folder:String, print = true):Sound
 		return PathsUtil.music(key, folder, print);

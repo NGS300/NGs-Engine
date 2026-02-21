@@ -2,7 +2,7 @@ package core.states;
 
 import flixel.effects.FlxFlicker;
 
-class MenuState extends core.BeatState {
+class MenuState extends BeatState {
 	var menuItems = new FlxTypedGroup<FlxSprite>();
 	var camFollow = new flixel.FlxObject(0, 0, 1, 1);
     var mainUnder:FlxSprite;
@@ -26,7 +26,7 @@ class MenuState extends core.BeatState {
 		DiscordClient.changePresence('In Main Menu');
 		persistentUpdate = persistentDraw = true;
 
-		var i = 'desat';
+		var i = 'menu/desat';
         var yScroll = 0.25;
 		mainBG = new FlxSprite().loadGraphic(Paths.textures(i));
 		mainBG.antialiasing = Settings.data.antialiasing;
