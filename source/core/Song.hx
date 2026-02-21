@@ -1,9 +1,9 @@
 package core;
 
+import core.Section.SwagSection;
 import haxe.Json;
 import util.SongUtil;
 import lime.utils.Assets;
-import core.Section.SwagSection;
 
 class Event {
 	public var name:String;

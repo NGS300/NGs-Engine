@@ -13,86 +13,94 @@ class BeatState extends FlxTransitionableState {
 	var curDecimalBeat:Float = 0;
 
 	public var controls(get, never):Controls;
-	function get_controls()
+
+	inline function get_controls()
 		return Controls.instance;
 
 	override function create() {
-		FlxTransitionableState.defaultTransIn = new TransitionData(
-			FADE, FlxColor.BLACK, 1,
-			new FlxPoint(0, -1), null, null
-		);
-		FlxTransitionableState.defaultTransOut = new TransitionData(
-			FADE, FlxColor.BLACK, 0.6,
-			new FlxPoint(0, 1), null, null
-		);
+		FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), null, null);
+		FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.6, new FlxPoint(0, 1), null, null);
 		transIn = FlxTransitionableState.defaultTransIn;
+
 		TimingStruct.clear(); // Clear old timings
 		super.create();
 	}
 
 	override function update(elapsed:Float) {
-		if (Conductor.songPosition < 0)
+		if (Conductor.songPosition < 0) {
 			curDecimalBeat = 0;
-		else {
+		} else {
 			if (TimingStruct.AllTimings.length > 0) {
-				var data = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
-				if (data != null) {
-					Conductor.crochet = ((60 / data.bpm) * 1000);
-					var stepMS = Conductor.crochet / 4;
-					var startInMS = data.startTime * 1000;
-
-					curDecimalBeat = data.startBeat + ((Conductor.songPosition / 1000 - data.startTime) * (data.bpm / 60));
-					var ste:Int = Math.floor(data.startStep + ((Conductor.songPosition - startInMS) / stepMS));
-					if (ste >= 0) {
-						if (ste > curStep) {
-							for (_ in curStep...ste) {
-								curStep++;
-								updateBeat();
-								stepHit();
-							}
-						} else if (ste < curStep) {
-							curStep = ste;
-							updateBeat();
-						}
-					}
-				}
-			} else { // Fallback if no timings
-				curDecimalBeat = (Conductor.songPosition / 1000) * (Conductor.bpm / 60);
-				var nextStep:Int = Math.floor(Conductor.songPosition / Conductor.stepCrochet);
-				if (nextStep >= 0) {
-					if (nextStep > curStep) {
-						for (_ in curStep...nextStep) {
-							curStep++;
-							updateBeat();
-							stepHit();
-						}
-					} else if (nextStep < curStep) {
-						curStep = nextStep;
-						updateBeat();
-					}
-				}
-				Conductor.crochet = ((60 / Conductor.bpm) * 1000);
+				updateWithTimingStruct();
+			} else {
+				updateFallback();
 			}
 		}
+
 		systemClock = util.DateUtil.systemDate();
 		super.update(elapsed);
 	}
 
 	/**
+	 * Update beat/step using TimingStruct (when BPM changes exist)
+	 */
+	private function updateWithTimingStruct():Void {
+		var data = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
+		if (data == null)
+			return;
+
+		Conductor.crochet = (60 / data.bpm) * 1000;
+		var stepMS = Conductor.crochet / 4;
+		var startInMS = data.startTime * 1000;
+
+		curDecimalBeat = data.startBeat + ((Conductor.songPosition / 1000 - data.startTime) * (data.bpm / 60));
+		var nextStep:Int = Math.floor(data.startStep + ((Conductor.songPosition - startInMS) / stepMS));
+
+		handleStepChange(nextStep);
+	}
+
+	/**
+	 * Fallback update when no TimingStruct is available
+	 */
+	private function updateFallback():Void {
+		curDecimalBeat = (Conductor.songPosition / 1000) * (Conductor.bpm / 60);
+		var nextStep:Int = Math.floor(Conductor.songPosition / Conductor.stepCrochet);
+
+		handleStepChange(nextStep);
+		Conductor.crochet = (60 / Conductor.bpm) * 1000;
+	}	
+
+	/**
+	 * Handle step changes and trigger stepHit/beatHit when needed
+	 */
+	private function handleStepChange(nextStep:Int):Void {
+		if (nextStep < 0)
+			return;
+
+		if (nextStep > curStep) {
+			for (_ in curStep...nextStep) {
+				curStep++;
+				updateBeat();
+				stepHit();
+			}
+		} else if (nextStep < curStep) {
+			curStep = nextStep;
+			updateBeat();
+		}
+	}
+
+	/**
 	 * Update current beat from steps
 	 */
-	function updateBeat():Void 
+	private function updateBeat():Void {
 		curBeat = Math.floor(curStep / 4);
+	}
 
 	/**
 	 * Calculates the current step using BPM changes
 	 */
 	function updateCurStep():Int {
-		var lastChange:core.Conductor.BPMChangeEvent = {
-			stepTime: 0,
-			songTime: 0,
-			bpm: 0
-		}
+		var lastChange:core.Conductor.BPMChangeEvent = {stepTime: 0, songTime: 0, bpm: 0};
 		for (change in Conductor.bpmChangeMap) {
 			if (Conductor.songPosition >= change.songTime)
 				lastChange = change;

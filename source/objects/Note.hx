@@ -99,7 +99,6 @@ class Note extends FlxSprite {
 	function setupNotes(isPixel:Bool) {
 		var basePath = 'note/skins/NOTES_';
 		var animTypes = ["arrow", "hold", "end"];
-
 		if (!isPixel) { // NORMAL NOTES
 			frames = Paths.atlas(basePath + 'assets');
 
@@ -123,7 +122,6 @@ class Note extends FlxSprite {
 			}
 			// setGraphicSize(widthSize);
 		}
-
 		updateHitbox();
 		antialiasing = !isPixel && Settings.data.antialiasing;
 	}

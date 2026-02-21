@@ -28,23 +28,24 @@ class TitleState extends core.BeatState {
 			Settings.load(); // as a precaution
 		}
 
-		#if FREEPLAY
+		/*#if FREEPLAY
 		changeState(FreeplayState);
 		#elseif CHARTING
 		changeState(core.states.editors.ChartingState);
-		#else
+		#else*/
 		if (FlxG.save.data.notified == null) {
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;
 			changeState(WarningState);
 		} else
 			startIntro();
-		#end
+		//#end
 	}
 
 	function startIntro():Void {
 		var i = 'title/';
 		Conductor.newBpm(102);
+		//Conductor.bpm = 102;
 		persistentUpdate = true;
 
 		if (!initialized && FlxG.sound.music == null)

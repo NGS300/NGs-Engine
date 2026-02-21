@@ -104,7 +104,7 @@ class PathsUtil {
 	public static function setCurrentLevel(name:String):Void
 		currentLevel = name.toLowerCase();
 
-	inline static function existsAny(path:String, ?type:openfl.utils.AssetType):Bool {
+	inline public static function existsAny(path:String, ?type:openfl.utils.AssetType):Bool {
 		#if sys
 		if (FileSystem.exists(path))
 			return true;
@@ -177,12 +177,15 @@ class PathsUtil {
 	public static function cacheSound(key:String, ?folder:String, canPrint = true) {
 		final path = getPath('$key.$soundFile', SOUND, folder);
 		if (!currentTrackedSounds.exists(path)) {
-			if (!existsAny(path, SOUND)) {
-				if (canPrint)
-					Log.info('Sound file not found: ' + key);
-				return null;
-			}
-			currentTrackedSounds.set(path, OpenFlAssets.getSound(path));
+			#if sys
+			if (FileSystem.exists(path))
+				currentTrackedSounds.set(path, Sound.fromFile(path));
+			#else
+			if (OpenFlAssets.exists(path, SOUND))
+				currentTrackedSounds.set(path, OpenFlAssets.getSound(path));
+			#end
+			else if (canPrint)
+			Log.info('Sound file not found: ' + key); 
 		}
 
 		localTrackedAssets.push(path);
@@ -252,7 +255,9 @@ class PathsUtil {
 	public static function cacheBitmap(key:String, ?folder:String, ?bitmap:BitmapData):FlxGraphic {
 		if (bitmap == null) {
 			final file = getPath(key, IMAGE, folder);
-			if (existsAny(file, IMAGE))
+			if (FileSystem.exists(file))
+				bitmap = BitmapData.fromFile(file);
+			else if (OpenFlAssets.exists(file, IMAGE))
 				bitmap = OpenFlAssets.getBitmapData(file);
 			if (bitmap == null) {
 				Log.info('Bitmap not found: ' + file + ' | key: ' + key);
