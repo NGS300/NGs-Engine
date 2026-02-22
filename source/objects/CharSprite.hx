@@ -8,17 +8,17 @@ class CharSprite extends FlxSprite {
     public var curCharacter:String;
     public var suffix = '';
 
-    public var singDuration:Float = 4;
-	public var holdTimer:Float = 0;
-    public var heyTimer:Float = 0;
     public var specialAnim = false;
     public var skipDance = false;
     public var isPlayer = false;
-
-    public var debugMode = false;
     var danceIdle = false;
     var danced = false;
 
+    public var singDuration = 4.0;
+    public var heyTimer = 0.6;
+	public var holdTimer = 0.0;
+
+    public var debugMode = false;
     var localFolder:String;
     var script:HScript;
     public function new(x:Float, y:Float, ?char:String, ?isPlayer:Bool) {
@@ -39,16 +39,20 @@ class CharSprite extends FlxSprite {
         return null;
     }
 
-    public function loadSprite(file:String, ?folder:String) {
+    public function loadAtlas(file:String, ?folder:String) {
         frames = Paths.atlas(file, localFolder + folder);
         antialiasing = (PlayState.stage.isPixel ? false : Settings.data.antialiasing);
     }
 
-    public function newPrefix(name:String, prefix:String, ?frame:Float, ?loop:Bool, ?flipX:Bool, ?flipY:Bool)
+    public function newPrefix(name:String, prefix:String, ?frame:Float, ?loop:Bool, ?flipX:Bool, ?flipY:Bool) {
         animation.addByPrefix(name, prefix, frame ?? 24, loop ?? false, flipX ?? false, flipY ?? false);
+        newOffset(name);
+    }
 
-    public function newIndices(name:String, prefix:String, indices:Array<Int>, ?postfix:String, ?frame:Float, ?loop:Bool, ?flipX:Bool, ?flipY:Bool)
+    public function newIndices(name:String, prefix:String, indices:Array<Int>, ?postfix:String, ?frame:Float, ?loop:Bool, ?flipX:Bool, ?flipY:Bool) {
         animation.addByIndices(name, prefix, indices, postfix ?? "", frame ?? 24, loop ?? false, flipX ?? false, flipY ?? false);
+        newOffset(name);
+    }
 
     public function newOffset(name:String, ?x:Float, ?y:Float)
 	    offsets[name] = [x ?? 0, y ?? 0];
