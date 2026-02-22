@@ -1,19 +1,13 @@
-package;
+package core.states;
 
-import flixel.FlxG;
-import flixel.FlxObject;
-import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.FlxObject;
 import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
 
 /**
 	*DEBUG MODE
  */
-class AnimationDebug extends FlxState
-{
+class AnimationDebug extends FlxState {
 	var bf:Boyfriend;
 	var dad:Character;
 	var char:Character;
@@ -25,16 +19,13 @@ class AnimationDebug extends FlxState
 	var daAnim:String = 'spooky';
 	var camFollow:FlxObject;
 
-	public function new(daAnim:String = 'spooky')
-	{
+	public function new(daAnim = 'spooky') {
 		super();
 		this.daAnim = daAnim;
 	}
 
-	override function create()
-	{
+	override function create() {
 		FlxG.sound.music.stop();
-
 		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10);
 		gridBG.scrollFactor.set(0.5, 0.5);
 		add(gridBG);
@@ -42,8 +33,7 @@ class AnimationDebug extends FlxState
 		if (daAnim == 'bf')
 			isDad = false;
 
-		if (isDad)
-		{
+		if (isDad) {
 			dad = new Character(0, 0, daAnim);
 			dad.screenCenter();
 			dad.debugMode = true;
@@ -51,9 +41,7 @@ class AnimationDebug extends FlxState
 
 			char = dad;
 			dad.flipX = false;
-		}
-		else
-		{
+		} else {
 			bf = new Boyfriend(0, 0);
 			bf.screenCenter();
 			bf.debugMode = true;

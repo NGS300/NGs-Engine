@@ -2,7 +2,6 @@ package;
 
 import util.PathsUtil;
 import flash.media.Sound;
-import openfl.utils.AssetType;
 
 /**
 	** A Core class which handles determining asset paths.
@@ -14,7 +13,7 @@ class Paths {
 	public static function clearMemoryCache()
 		PathsUtil.clearStoredMemory();
 
-	public static function getPath(file:String, ?folder:String, ?type:AssetType):String
+	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType):String
 		return PathsUtil.getPath(file, folder, type ?? TEXT);
 
 	public static function font(key:String, ?folder:String, print = true):String

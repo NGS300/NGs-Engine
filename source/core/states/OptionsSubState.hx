@@ -1,4 +1,4 @@
-package;
+package core.states;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -6,7 +6,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-class OptionsSubState extends MusicBeatSubstate
+class OptionsSubState extends BeatSubstate
 {
 	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls'];
 
@@ -37,10 +37,10 @@ class OptionsSubState extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 
-		if (controls.UP_P)
+		if (controls.UI_UP_P)
 			curSelected -= 1;
 
-		if (controls.DOWN_P)
+		if (controls.UI_DOWN_P)
 			curSelected += 1;
 
 		if (curSelected < 0)

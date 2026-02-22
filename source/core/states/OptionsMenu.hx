@@ -1,26 +1,11 @@
 package;
 
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import openfl.Lib;
 import Options;
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxMath;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import lime.utils.Assets;
 
-class OptionsMenu extends BeatState
-{
+class OptionsMenu extends BeatState {
 	public static var instance:OptionsMenu;
-
 	var selector:FlxText;
-	var curSelected:Int = 0;
+	var curSelected = 0;
 
 	var options:Array<OptionCategory> = [
 		new OptionCategory("Gameplay", [
@@ -34,7 +19,6 @@ class OptionsMenu extends BeatState
 			new ScrollSpeedOption("Change your scroll speed (1 = Chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
-			// new OffsetMenu("Get a note offset based off of your inputs!"),
 			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference")
 		]),
 		new OptionCategory("Appearance", [
@@ -60,15 +44,13 @@ class OptionsMenu extends BeatState
 	];
 
 	public var acceptInput:Bool = true;
-
 	private var currentDescription:String = "";
 	private var grpControls:FlxTypedGroup<Alphabet>;
 	public static var versionShit:FlxText;
 
 	var currentSelectedCat:OptionCategory;
 	var blackBorder:FlxSprite;
-	override function create()
-	{
+	override function create() {
 		instance = this;
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 

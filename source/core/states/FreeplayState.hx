@@ -108,7 +108,7 @@ class FreeplayState extends BeatState {
 			changeDiff(1);
 
 		if (controls.BACK)
-			changeState(core.states.MenuState);
+			changeState(MenuState);
 
 		if (accepted) {
 			var songLowercase = StringTools.replace(songs[curSelected].songName, " ", "-").toLowerCase();

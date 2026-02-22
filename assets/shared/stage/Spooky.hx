@@ -1,0 +1,27 @@
+var halloweenBG:Sprite;
+function onCreate() {
+    halloweenBG = new Sprite('halloween_bg', 'week2', -200, -100, ['bg', 'lightning']);
+    add(halloweenBG);
+}
+
+var lightningStrikeBeat = 0;
+var lightningOffset = 8;
+
+function onBeat() {
+    if (/* FlxG.save.data.distractions && */ FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
+	    lightningStrike();
+}
+
+function lightningStrike():Void {
+		FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2, 'week2'));
+		halloweenBG.animation.play('lightning');
+
+		lightningStrikeBeat = curBeat;
+		lightningOffset = FlxG.random.int(8, 24);
+
+		if (bf.hasAnimation('scared'))
+			bf.playAnim('scared', true);
+
+		if (gf != null && gf.hasAnimation('scared'))
+			gf.playAnim('scared', true);
+}

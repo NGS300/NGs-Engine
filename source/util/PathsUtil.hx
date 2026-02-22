@@ -112,7 +112,7 @@ class PathsUtil {
 		return OpenFlAssets.exists(path, type);
 	}
 
-	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType = TEXT):String {
+	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType):String {
 		if (folder != null)
 			return getFolderPath(file, folder);
 
@@ -130,34 +130,6 @@ class PathsUtil {
 
 	inline public static function getSharedPath(file = '')
 		return 'assets/shared/$file';
-
-	/*public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType = TEXT):String {
-		if (folder == "shared")
-			return 'assets/shared/$file';
-
-		var dir = (folder != null && folder.trim() != '')
-			? folder
-			: (currentLevel != null && currentLevel.trim() != '' ? currentLevel : null);
-
-		if (dir != null) {
-			var path = 'assets/$dir/$file';
-			if (existsAny(path, type))
-				return path;
-		}
-		return 'assets/shared/$file';
-	}*/
-		/*public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType = TEXT):String {
-		var dir = (folder != null && folder.trim() != '') ? folder : (currentLevel != null
-			&& currentLevel.trim() != '' ? currentLevel : 'shared');
-
-		if (dir != 'shared') {
-			var path = 'assets/$dir/$file';
-			if (existsAny(path, type))
-				return path;
-		}
-
-		return 'assets/shared/$file';
-	}*/
 
 	inline static public function formatPath(path:String) {
 		final invalidChars = ~/[~&;:<>#\s]/g;

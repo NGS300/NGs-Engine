@@ -1,4 +1,4 @@
-package;
+package core.states;
 
 import Conductor.BPMChangeEvent;
 import flixel.addons.transition.FlxTransitionableState;
@@ -6,13 +6,10 @@ import flixel.addons.transition.TransitionData;
 
 class BeatState extends FlxTransitionableState {
 	public static var instance:BeatState;
-	private var lastBeat:Float = 0;
-	private var lastStep:Float = 0;
-
-	private var curStep:Int = 0;
-	private var curBeat:Int = 0;
+	var curStep = 0;
+	var curBeat = 0;
 	
-	private var controls(get, never):Controls;
+	var controls(get, never):Controls;
 	inline function get_controls()
 		return Controls.instance;
 
@@ -25,29 +22,25 @@ class BeatState extends FlxTransitionableState {
 	}
 
 	override function update(elapsed:Float) {
-		var oldStep:Int = curStep;
-
+		var oldStep = curStep;
 		updateCurStep();
 		updateBeat();
-
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
 
 		super.update(elapsed);
 	}
 
-	private function updateBeat():Void {
-		lastBeat = curStep;
+	function updateBeat():Void {
 		curBeat = Math.floor(curStep / 4);
 	}
 
-	private function updateCurStep():Void {
+	function updateCurStep():Void {
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
 			songTime: 0,
 			bpm: 0
 		}
-
 		for (i in 0...Conductor.bpmChangeMap.length) {
 			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
 				lastChange = Conductor.bpmChangeMap[i];
@@ -56,11 +49,16 @@ class BeatState extends FlxTransitionableState {
 	}
 
 	public function stepHit():Void {
+		if (PlayState.stage != null)
+			PlayState.stage.stepHit(curStep);
 		if (curStep % 4 == 0)
 			beatHit();
 	}
 
-	public function beatHit():Void {}
+	public function beatHit():Void {
+		if (PlayState.stage != null)
+			PlayState.stage.beatHit(curBeat);
+	}
 
 	public function changeState(?next:Class<flixel.FlxState>) {
 		if (next == null) {
@@ -68,7 +66,6 @@ class BeatState extends FlxTransitionableState {
 			Log.info('Resetting the current $next.');
 			return;
 		}
-
 		FlxG.switchState(() -> cast Type.createInstance(next, []));
 		Log.info('Switching to a $next.');
 	}
