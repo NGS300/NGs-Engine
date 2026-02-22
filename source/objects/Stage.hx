@@ -33,7 +33,7 @@ class Stage extends FlxBasic {
             case 'halloween': 'Spooky';
             default: curStage;
         }
-        script = new HScript(Paths.getPath('$stageName.hx', 'shared/stage'));
+        script = new HScript(Paths.getPath('$stageName.hxs', 'shared/stage'));
         var song = PlayState.SONG;
 
         script.set("FlxSprite", flixel.FlxSprite);

@@ -19,9 +19,9 @@ function lightningStrike():Void {
 		lightningStrikeBeat = curBeat;
 		lightningOffset = FlxG.random.int(8, 24);
 
-		if (bf.hasAnimation('scared'))
+		if (bf.hasAnim('scared'))
 			bf.playAnim('scared', true);
 
-		if (gf != null && gf.hasAnimation('scared'))
+		if (gf != null && gf.hasAnim('scared'))
 			gf.playAnim('scared', true);
 }

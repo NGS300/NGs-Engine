@@ -9,7 +9,7 @@ function onCreate() {
 	stageFront.active = false;
 	add(stageFront);
 	
-	var stageCurtains = new FlxSprite('stagecurtains', 'week1', -500, -300, 1.3, 1.3);
+	var stageCurtains = new Sprite('stagecurtains', 'week1', -500, -300, 1.3, 1.3);
 	stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
 	stageCurtains.updateHitbox();
 	stageCurtains.active = false;

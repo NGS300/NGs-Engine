@@ -31,7 +31,7 @@ class CharSprite extends FlxSprite {
     private function getFolder(character:String):HScript {
         var folders = ["bf", "gf", "opponent"];
         for (folder in folders) {
-            var path = Paths.getPath(character + ".hx", localFolder + '$folder/data');
+            var path = Paths.getPath(character + ".hxs", localFolder + '$folder/data');
             if (OpenFlAssets.exists(path))
                 return new HScript(path);
         }
