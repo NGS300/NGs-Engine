@@ -3,11 +3,10 @@ package core.states;
 import flixel.effects.FlxFlicker;
 
 class MenuState extends BeatState {
-	var menuItems = new FlxTypedGroup<FlxSprite>();
 	var camFollow = new flixel.FlxObject(0, 0, 1, 1);
+	var menuItems = new FlxTypedGroup<FlxSprite>();
     var mainUnder:FlxSprite;
 	var mainBG:FlxSprite;
-	var NORMAL_X = 625;
 	var menuData = [
 		{name: "story_mode", color: "FFD84C"},
 		{name: "freeplay", color: "4CDFFF"},
@@ -15,10 +14,11 @@ class MenuState extends BeatState {
 		{name: "options", color: "6CFF8D"},
 		{name: "credits", color: "FF6BD6"}
 	];
-	static var curSelected = 0;
-	var timeNotMoving = 0.0;
-	var selectedIt = false;
-	var allowMouse = true;
+	static var curSelected:Int = 0;
+	var timeNotMoving:Float = 0;
+	var selectedIt:Bool = false;
+	var allowMouse:Bool = true;
+	var NORMAL_X:Int = 625;
 
     override function create() {
         super.create();
@@ -28,7 +28,7 @@ class MenuState extends BeatState {
 
 		var i = 'menu/desat';
         var yScroll = 0.25;
-		mainBG = new FlxSprite().loadGraphic(Paths.textures(i));
+		mainBG = new FlxSprite().loadGraphic(Paths.image(i));
 		mainBG.antialiasing = Settings.data.antialiasing;
 		mainBG.scrollFactor.set(0, yScroll);
 		mainBG.setGraphicSize(Std.int(mainBG.width * 1.175));
@@ -36,7 +36,7 @@ class MenuState extends BeatState {
         mainBG.screenCenter();
 		add(mainBG);
 		
-		mainUnder = new FlxSprite().loadGraphic(Paths.textures(i));
+		mainUnder = new FlxSprite().loadGraphic(Paths.image(i));
 		mainUnder.antialiasing = Settings.data.antialiasing;
 		mainUnder.scrollFactor.set(0, yScroll);
 		mainUnder.setGraphicSize(Std.int(mainUnder.width * 1.175));
@@ -52,7 +52,7 @@ class MenuState extends BeatState {
 		for (num => data in menuData) {
 			var name = data.name;
 			var menuItem = new FlxSprite();
-			menuItem.frames = Paths.textures('menu/_$name');
+			menuItem.frames = Paths.atlas('menu/_$name');
 			menuItem.animation.addByPrefix('idle', '$name idle', 24, true);
 			menuItem.animation.addByPrefix('selected', '$name selected', 24, true);
 			menuItem.animation.play('idle');

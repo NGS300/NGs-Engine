@@ -1,0 +1,118 @@
+var trainFrameTiming = 0.0;
+var trainFinishing = false;
+var startedMoving = false;
+var trainMoving = false;
+var trainCooldown = 0;
+var trainCars = 8;
+var curLight = 0;
+
+var distractions;
+var trainSound;
+var trainOBJ;
+var lights;
+
+function onCreate() {
+    distractions = Settings.data.distractions;
+    cam.zoom = 1.05;
+
+    var sky = new BGSprite(-100, 0, 'sky', 'week3', 0.1, 0.1);
+	add(sky);
+
+    var city = new BGSprite(-10, 0, 'city', 'week3', 0.3, 0.3);
+	city.setGraphicSize(Std.int(city.width * 0.85));
+	city.updateHitbox();
+	add(city);
+
+    lights = new FlxGroup();
+    if (distractions)
+        add(lights);
+
+    for (i in 0...5) {
+        var glow = new BGSprite(city.x, 0, 'glow' + i, 'week3', 0.3, 0.3);
+        glow.visible = false;
+        glow.setGraphicSize(Std.int(glow.width * 0.85));
+        glow.updateHitbox();
+        lights.add(glow);
+    }
+
+    var portico = new BGSprite(-40, 50, 'portico', 'week3');
+	add(portico);
+
+	trainOBJ = new BGSprite(2000, 360, 'train', 'week3');
+    trainOBJ.active = true;
+	if (distractions)
+		add(trainOBJ);
+
+	trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes', 'week3'));
+	FlxG.sound.list.add(trainSound);
+
+	var street = new BGSprite(-40, portico.y, 'street', 'week3');
+	add(street);
+}
+
+function trainStart() {
+	if (!distractions) return;
+
+	trainMoving = true;
+	if (!trainSound.playing)
+		trainSound.play(true);
+}
+
+function trainReset() {
+	trainOBJ.x = FlxG.width + 200;
+	trainMoving = false;
+	trainCars = 8;
+	trainFinishing = false;
+	startedMoving = false;
+}
+
+function updateTrainPos() {
+	if (distractions) {
+		if (trainSound != null && trainSound.time >= 4700) {
+			startedMoving = true;
+			GF.play('hairBlow');
+		}
+		
+		if (startedMoving) {
+			trainOBJ.x -= 400;
+			if (trainOBJ.x < -2000 && !trainFinishing) {
+				trainOBJ.x = -1150;
+				trainCars -= 1;
+				if (trainCars <= 0)
+					trainFinishing = true;
+			}
+			if (trainOBJ.x < -4000 && trainFinishing)
+				trainReset();
+		}
+    }
+}
+
+function onUpdate(elapsed) {
+    if (trainMoving && distractions) {
+		trainFrameTiming += elapsed;
+		if (trainFrameTiming >= 1 / 24) {
+			updateTrainPos();
+			trainFrameTiming = 0;
+		}
+	}
+}
+
+function onBeat() {
+    if (distractions) {
+        if (!trainMoving)
+            trainCooldown += 1;
+        
+        if (curBeat % 4 == 0) {
+            lights.forEach(function(spr) {
+                spr.visible = false;
+            });
+            curLight = FlxG.random.int(0, lights.members.length - 1);
+            lights.members[curLight].visible = true;
+        }
+
+        if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8) {
+            trainCooldown = FlxG.random.int(-4, 0);
+            trainStart();
+        }
+    }
+}

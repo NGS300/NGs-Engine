@@ -1,0 +1,30 @@
+function onNew() {
+    loadAtlas('gf/gfChristmas');
+    animIndices('danceLeft', 'GF Dancing Beat', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+	animIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]);
+    animIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+	animIndices('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], 24, true);
+    animIndices('sad', 'gf sad', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    animPrefix('scared', 'GF FEAR', 24, true);
+    animPrefix('cheer', 'GF Cheer');
+
+    animPrefix('singUP', 'GF Up Note');
+	animPrefix('singDOWN', 'GF Down Note');
+	animPrefix('singLEFT', 'GF left note');
+	animPrefix('singRIGHT', 'GF Right Note');
+
+	setOffset('danceLeft', 0, -9);
+	setOffset('danceRight', 0, -9);
+    setOffset('hairFall', 0, -9);
+	setOffset('hairBlow', 45, -8);
+    setOffset('sad', -2, -2);
+    setOffset('scared', -2, -17);
+    setOffset('cheer');
+
+	setOffset("singUP", 0, 4);
+    setOffset("singDOWN", 0, -20);
+    setOffset("singLEFT", 0, -19);
+	setOffset("singRIGHT", 0, -20);
+
+	play('danceRight');
+}

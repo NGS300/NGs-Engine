@@ -1,0 +1,20 @@
+function onNew() {
+    loadAtlas('spooky_kids_assets');
+    animIndices('danceLeft', 'spooky dance idle', [0, 2, 6], 12);
+	animIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], 12);
+    animPrefix('singUP', 'spooky UP NOTE');
+	animPrefix('singDOWN', 'spooky DOWN note');
+	animPrefix('singLEFT', 'note sing left');
+	animPrefix('singRIGHT', 'spooky sing right');
+
+	setOffset('danceLeft');
+	setOffset('danceRight');
+	setOffset("singUP", -20, 26);
+	setOffset("singRIGHT", -130, -14);
+	setOffset("singLEFT", 130, -10);
+	setOffset("singDOWN", -50, -130);
+
+	play('danceRight');
+
+    pos.set[1] = 200;
+}

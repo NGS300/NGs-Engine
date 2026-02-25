@@ -1,10 +1,6 @@
 package core.states;
 
 class TitleState extends BeatState {
-	static var initialized = false; // Only play the credits once per session.
-	var transitioning = false;
-	var skippedIntro = false;
-	
 	var textGroup = new flixel.group.FlxGroup();
 	var curShit:Array<String> = [];
 	var blackScreen:FlxSprite;
@@ -12,6 +8,10 @@ class TitleState extends BeatState {
 	var logoSpr:FlxSprite;
 	var gradDown:FlxSprite;
 	var gradUp:FlxSprite;
+
+	static var initialized:Bool = false; // Only play the credits once per session.
+	var transitioning:Bool = false;
+	var skippedIntro:Bool = false;
 
 	override public function create() {
 		Paths.clearMemoryCache();
@@ -24,6 +24,7 @@ class TitleState extends BeatState {
 			persistentUpdate = persistentDraw = true;
 			Settings.load(); // as a precaution
 			KadeEngineData.initSave();
+			FlxG.save.data.botplay = true;
 		}
 
 		//#if FREEPLAY
@@ -51,7 +52,7 @@ class TitleState extends BeatState {
 		FlxG.sound.music.fadeIn(4, 0, 0.7);
 
 		add(new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK).screenCenter());
-		gradDown = new FlxSprite(0, 510, Paths.textures(i + 'gradient'));
+		gradDown = new FlxSprite(0, 510, Paths.image(i + 'gradient'));
 		gradDown.antialiasing = Settings.data.antialiasing;
 		gradDown.setGraphicSize(1880, 256);
 		gradDown.color = 0xFF680000;
@@ -59,7 +60,7 @@ class TitleState extends BeatState {
 		gradDown.alpha = 0.5;
 		add(gradDown);
 
-		gradUp = new FlxSprite(0, -38, Paths.textures(i + 'gradient'));
+		gradUp = new FlxSprite(0, -38, Paths.image(i + 'gradient'));
 		gradUp.antialiasing = Settings.data.antialiasing;
 		gradUp.setGraphicSize(1880, 256);
 		gradUp.color = 0xFFff0000;
@@ -69,7 +70,7 @@ class TitleState extends BeatState {
 		add(gradUp);
 
 		logoSpr = new FlxSprite(250, 142);
-		logoSpr.frames = Paths.textures(i + 'logos');
+		logoSpr.frames = Paths.atlas(i + 'logos');
 		logoSpr.setGraphicSize(Std.int(logoSpr.width * 0.6), Std.int(logoSpr.height * 0.6));
 		logoSpr.animation.addByPrefix('bump', 'bump0', 24, false);
 		logoSpr.antialiasing = Settings.data.antialiasing;
@@ -79,7 +80,7 @@ class TitleState extends BeatState {
 
 		var isMobile = (Main.os.isMobile ? true : false);
 		titleText = new FlxSprite((isMobile ? 60 : 122) + (flixel.math.FlxPoint.get().x / 2), 590);
-		titleText.frames = Paths.textures(i + 'titleEnter' + (!isMobile ? '' : '_mobile'));
+		titleText.frames = Paths.atlas(i + 'titleEnter' + (!isMobile ? '' : '_mobile'));
 		titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
 		titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
 		titleText.antialiasing = Settings.data.antialiasing;

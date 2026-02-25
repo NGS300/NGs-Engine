@@ -19,6 +19,9 @@ class Paths {
 	public static function font(key:String, ?folder:String, print = true):String
 		return PathsUtil.font(key, folder, print);
 
+	public static function hxs(key:String, ?folder:String, ?isData:Bool):String
+		return PathsUtil.hscript(key, folder, isData);
+
 	public static function text(key:String, ?folder:String, print = true):String
 		return PathsUtil.data(key, folder, print);
 
@@ -48,9 +51,6 @@ class Paths {
 
 	public static function atlas(key:String, ?folder:String, canPrint = true):flixel.graphics.frames.FlxAtlasFrames
 		return PathsUtil.atlas(key, folder, canPrint);
-
-	public static function textures(key:String, ?folder:String):Dynamic
-		return PathsUtil.textures(key, folder);
 
 	public static function video(key:String, ?folder:String, print = true):String
 		return PathsUtil.videos(key, folder, print);

@@ -6,8 +6,8 @@ import flixel.addons.transition.TransitionData;
 
 class BeatState extends FlxTransitionableState {
 	public static var instance:BeatState;
-	var curStep = 0;
-	var curBeat = 0;
+	var curStep:Int = 0;
+	var curBeat:Int = 0;
 	
 	var controls(get, never):Controls;
 	inline function get_controls()
@@ -22,12 +22,14 @@ class BeatState extends FlxTransitionableState {
 	}
 
 	override function update(elapsed:Float) {
+		if (PlayState.stage != null)
+			PlayState.stage.updates(elapsed);
+		
 		var oldStep = curStep;
 		updateCurStep();
 		updateBeat();
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
-
 		super.update(elapsed);
 	}
 

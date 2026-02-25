@@ -1,0 +1,28 @@
+function onNew() {
+    loadAtlas('bf/bfChristmas');
+    animPrefix('idle', 'BF idle dance');
+	animPrefix('singUP', 'BF NOTE UP0');
+    animPrefix('singDOWN', 'BF NOTE DOWN0');
+	animPrefix('singLEFT', 'BF NOTE LEFT0');
+	animPrefix('singRIGHT', 'BF NOTE RIGHT0');
+	animPrefix('singUPmiss', 'BF NOTE UP MISS');
+    animPrefix('singDOWNmiss', 'BF NOTE DOWN MISS');
+	animPrefix('singLEFTmiss', 'BF NOTE LEFT MISS');
+	animPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS');
+	animPrefix('hey', 'BF HEY');
+
+	setOffset('idle', -5);
+	setOffset("singUP", -29, 27);
+    setOffset("singDOWN", -10, -50);
+    setOffset("singLEFT", 12, -6);
+	setOffset("singRIGHT", -38, -7);
+	setOffset("singUPmiss", -29, 27);
+    setOffset("singDOWNmiss", -11, -19);
+    setOffset("singLEFTmiss", 12, 24);
+	setOffset("singRIGHTmiss", -30, 21);
+	setOffset("hey", 7, 4);
+
+	play('idle');
+
+    pos.set[1] = 350;
+}

@@ -1,0 +1,15 @@
+function onNew() {
+    loadAtlas('bf/bfPixelsDEAD');
+	animPrefix('firstDeath', "BF Dies pixel");
+	animPrefix('deathLoop', "Retry Loop", 24, true);
+	animPrefix('deathConfirm', "RETRY CONFIRM");
+
+	animPrefix('firstDeath');
+	animPrefix('deathLoop', -37);
+	animPrefix('deathConfirm', -37);
+
+	play('firstDeath');
+
+    graphicSize(Std.int(width * 6));
+	updateBox();
+}

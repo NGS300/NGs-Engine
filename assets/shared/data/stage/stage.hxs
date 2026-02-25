@@ -1,0 +1,14 @@
+function onCreate() {
+    var bg = new BGSprite(-600, -200, 'back', 'week1', 0.9, 0.9);
+	add(bg);
+	
+	var stageFront = new BGSprite(-650, 600, 'front', 'week1', 0.9, 0.9);
+	stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+	stageFront.updateHitbox();
+	add(stageFront);
+	
+	var stageCurtains = new BGSprite(-500, -300, 'curtains', 'week1', 1.3, 1.3);
+	stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+	stageCurtains.updateHitbox();
+	add(stageCurtains);
+}

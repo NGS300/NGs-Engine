@@ -1,0 +1,28 @@
+function onNew() {
+    loadAtlas('Pico_FNF_assetss');
+    animPrefix('idle', "Pico Idle Dance");
+	animPrefix('singUP', 'pico Up note0');
+	animPrefix('singDOWN', 'Pico Down Note0');
+    animPrefix('singLEFT', 'Pico Note Right0');
+	animPrefix('singRIGHT', 'Pico NOTE LEFT0');
+    animPrefix('singUPmiss', 'pico Up note miss');
+	animPrefix('singDOWNmiss', 'Pico Down Note MISS');
+    animPrefix('singLEFTmiss', 'Pico Note Right Miss');
+	animPrefix('singRIGHTmiss', 'Pico NOTE LEFT miss');
+
+    setOffset('idle');
+	setOffset("singUP", -29, 27);
+	setOffset("singRIGHT", -68, -7);
+	setOffset("singLEFT", 65, 9);
+	setOffset("singDOWN", 200, -70);
+	setOffset("singUPmiss", -19, 67);
+	setOffset("singRIGHTmiss", -60, 41);
+	setOffset("singLEFTmiss", 62, 64);
+	setOffset("singDOWNmiss", 210, -28);
+
+    play('idle');
+
+    flipX = true;
+
+    pos.set[1] = 300;
+}

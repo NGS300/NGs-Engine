@@ -3,12 +3,10 @@ package core.states;
 class PauseSubState extends BeatSubstate {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
-	var curSelected = 0;
-
-	var pauseMusic:FlxSound;
+	var offsetChanged:Bool = false;
 	var perSongOffset:FlxText;
-	
-	var offsetChanged = false;
+	var pauseMusic:FlxSound;
+	var curSelected:Int = 0;
 	public function new(x:Float, y:Float) {
 		super();
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);

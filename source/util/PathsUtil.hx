@@ -112,16 +112,31 @@ class PathsUtil {
 		return OpenFlAssets.exists(path, type);
 	}
 
-	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType):String {
+	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType, ?canPrint:Bool):String {
+		var ty = type ?? TEXT;
+		#if MODS_ALLOWED
+		if (true) {
+			// Future mod system here
+			// For now, just ignore it
+		}
+		#end
+		
 		if (folder != null)
 			return getFolderPath(file, folder);
 
-		if (currentLevel != null && currentLevel != 'shared')
-		{
+		if (currentLevel != null && currentLevel != 'shared') {
 			var levelPath = getFolderPath(file, currentLevel);
-			if (OpenFlAssets.exists(levelPath, type))
+			if (OpenFlAssets.exists(levelPath, ty))
 				return levelPath;
 		}
+
+		var print = canPrint ?? false;
+		if (print) {
+			Log.info('Folder not found: $folder');
+			Log.info('use default folder: shared and Skiped');
+		}
+
+
 		return getSharedPath(file);
 	}
 
@@ -148,6 +163,12 @@ class PathsUtil {
 			Log.info('File not found: ' + key);
 
 		return null;
+	}
+
+	public static function hscript(key:String, ?folder:String, ?isData:Bool):String {
+		var canData = isData ?? true;
+		var str = (!canData ? '' : 'data/') + '$key';
+		return getPath('$str.hxs', folder);
 	}
 
 	public static function data(key:String, ?folder:String, canPrint = true):String {
@@ -198,17 +219,6 @@ class PathsUtil {
 		return currentTrackedSounds.get(path);
 	}
 
-	public static function videos(key:String, ?folder:String, canPrint = true):String {
-		final path = getPath('videos/$key.mp4', folder ?? 'videos', BINARY);
-		if (existsAny(path, BINARY))
-			return path;
-
-		if (canPrint)
-			Log.info('Video file not found: ' + key);
-
-		return null;
-	}
-
 	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
 	static public function image(key:String, ?folder:String):FlxGraphic {
 		key = 'images/$key.png';
@@ -247,24 +257,6 @@ class PathsUtil {
 		return null;
 	}
 
-	public static function textures(key:String, ?folder:String):Dynamic {
-		for (ext in ['json', 'txt', 'xml']) {
-			if (existsAny(getPath('images/$key.$ext', folder, TEXT), TEXT)) {
-				final atl = atlas(key, folder, false);
-				if (atl != null)
-					return atl;
-				break;
-			}
-		}
-
-		final img = image(key, folder);
-		if (img != null)
-			return img;
-
-		Log.info('File atlas or image not found in: ' + key);
-		return null;
-	}
-
 	public static function cacheBitmap(key:String, ?folder:String):FlxGraphic {
 		var bitmap:BitmapData = null;
 		if (bitmap == null) {
@@ -298,5 +290,19 @@ class PathsUtil {
 		currentTrackedAssets.set(key, graph);
 		localTrackedAssets.push(key);
 		return graph;
+	}
+
+	public static function videos(key:String, ?folder:String, canPrint:Bool = true):String {
+		final path = getPath('videos/$key.mp4', folder ?? 'videos', BINARY);
+
+		if (FileSystem.exists(path))
+			return path;
+		else if (OpenFlAssets.exists(path, BINARY))
+			return path;
+
+		if (canPrint)
+			Log.info('Video file not found: ' + key);
+
+		return null;
 	}
 }

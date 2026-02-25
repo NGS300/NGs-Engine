@@ -3,7 +3,7 @@ package core.states;
 import flixel.FlxState;
 
 class LoadingState extends BeatState {
-	inline static final MIN_TIME = 1.0;
+	inline static final MIN_TIME:Float = 1.0;
 	var callbacks:MultiCallback;
 	var target:Class<FlxState>;
 	var stopMusic:Bool;
@@ -41,7 +41,7 @@ class LoadingState extends BeatState {
 		FlxG.switchState(() -> Type.createInstance(target, []));
 	}
 
-	inline static public function loadAndSwitchState(target:Class<FlxState>, stopMusic = false):Void {
+	inline static public function loadAndSwitchState(target:Class<FlxState>, stopMusic:Bool = false):Void {
 		FlxG.switchState(() -> {
 			final song = PlayState.SONG.song;
 

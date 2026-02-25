@@ -2,9 +2,9 @@ package core.states;
 
 class WarningState extends BeatState {
 	var texts = new FlxTypedSpriteGroup<FlxText>();
+	var isBouce:Bool = false;
+	var isYes:Bool = true;
 	var selector:FlxText;
-	var isBouce = false;
-	var isYes = true;
 
 	override function create() {
 		super.create();

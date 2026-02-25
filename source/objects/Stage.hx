@@ -2,6 +2,7 @@ package objects;
 
 import core.HScript;
 import flixel.FlxBasic;
+import openfl.utils.Assets as OpenFlAssets;
 
 enum Countdown {
 	THREE;
@@ -14,58 +15,94 @@ enum Countdown {
 class Stage extends FlxBasic {
     public var dad:Character;
 	public var gf:Character;
-    public var bf:Boyfriend;
+    public var bf:Character;
 
+    public static var isPixel:Bool;
+    public var camZoom:Float;
     public var curStage:String;
-    public var isPixel = false;
-    public var camZoom = 0.9;
+
+    public var cam_gf:Array<Float>;
+    public var cam_dad:Array<Float>;
+    public var cam_bf:Array<Float>;
+	public var cam_speed:Float;
 
 	var script:HScript;
     public function new(?daStage:String) {
         super();
 		curStage = daStage ?? 'stage';
-        PlayState.curStage = curStage;
-		create();
+        //PlayState.curStage = curStage;
+		create(curStage);
 	}
 
-    public function create() {
-        var stageName = switch (curStage) {
-            case 'halloween': 'Spooky';
+    var names = new Map<String, Bool>();
+    function addName(n:String) {
+        if (!names.exists(n))
+            names.set(n, true);
+    }
+
+    public function create(stage:String) {
+        var song = PlayState.SONG;
+        var stageName = switch (song.stage) {
+            case 'halloween': 'spooky';
             default: curStage;
         }
-        script = new HScript(Paths.getPath('$stageName.hxs', 'shared/stage'));
-        var song = PlayState.SONG;
+        addName(stageName.toLowerCase());
+        addName(stageName.toUpperCase());
+        addName(stageName.substr(0, 1).toUpperCase() + stageName.substr(1).toLowerCase());
 
-        script.set("FlxSprite", flixel.FlxSprite);
-        script.set('FlxG', flixel.FlxG);
-        script.set("Sprite", BGSprite);
-        script.set("Std", Std);
-        script.set("Paths", Paths);
-
-        script.set("add", function(obj:FlxBasic) {
-            return FlxG.state.add(obj);
-        });
-
-        script.set("remove", function(obj:FlxBasic) {
-            return FlxG.state.remove(obj);
-        });
-
-        script.set("stage", this);
-        script.set("curStage", curStage);
-        script.set("camZoom", camZoom);
+        for (name in names.keys()) {
+            var path = Paths.hxs('stage/$name');
+            if (OpenFlAssets.exists(path)) {
+                script = new HScript(path);
+                break;
+            }
+        }
         script.set("song", song);
+        script.set("Stage", this);
+        script.set("stage", { name: curStage, pixel: false });
+        script.set("cam", { speed: 1, zoom: 0.9 });
 
-        //gf = new Character(0, 0, 'gf');
-        //gf.scrollFactor.set(0.95, 0.95);
-
-        //dad = new Character(0, 0, song.player2);
-        //bf = new Boyfriend(0, 0, song.player1);
-
-        script.set("gf", gf);
-        script.set("dad", dad);
-        script.set("bf", bf);
-
+        script.set("gf", { position: [400, 130], camPos: [0, 0] });
+        script.set("dad", { position: [100, 100], camPos: [0, 0] });
+        script.set("bf", { position: [770, 100], camPos: [0, 0] });
         script.call("onCreate");
+
+        var gfVersion = switch (song.gfVersion) {
+			case 'gf-car': 'gf-car';
+			case 'gf-christmas': 'gf-christmas';
+			case 'gf-pixel': 'gf-pixel';
+			default: 'gf';
+		}
+        gf = characterPos("gf", gfVersion);
+        script.set("GF", gf);
+
+        dad = characterPos("dad", song.player2);
+        script.set("DAD", dad);
+        
+        bf = characterPos("bf", song.player1);
+        script.set("BF", bf);
+
+        cam_gf  = script.getFloatArray("gf.camPos");
+        cam_dad = script.getFloatArray("dad.camPos");
+        cam_bf  = script.getFloatArray("bf.camPos");
+        cam_speed = script.getFloat('cam.speed');
+        isPixel = script.getBool('stage.pixel');
+        camZoom = script.getFloat('cam.zoom');
+    }
+
+    function characterPos(charName:String, version:String):Character {
+        var pos = script.getFloatArray(charName + ".position");
+        var char = new Character(pos[0], pos[1], version);
+
+        if (char.curCharacter.startsWith("gf")) {
+            char.scrollFactor.set(0.95, 0.95);
+            char.danceEveryNumBeats = 2;
+        }
+
+        char.x += char.positionArray[0];
+        char.y += char.positionArray[1];
+        
+        return char;
     }
 
     public function createPost() {
@@ -76,7 +113,7 @@ class Stage extends FlxBasic {
         script.call("onAddBehind", [of]);
     }
 
-    override function update(elapsed:Float) {
+    public function updates(elapsed:Float) {
         script.call("onUpdate", [elapsed]);
     }
 

@@ -7,6 +7,7 @@ import flixel.input.gamepad.FlxGamepadInputID;
 @:structInit class SaveDataVars {
 	public var flashing = true;
 	public var antialiasing = true;
+	public var distractions = true;
 	public var downScroll = false;
 }
 

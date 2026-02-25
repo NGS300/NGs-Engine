@@ -1,0 +1,18 @@
+function onNew() {
+    loadAtlas('DADDY_DEAREST');
+    animPrefix('idle', 'Dad idle dance');
+	animPrefix('singUP', 'Dad Sing Note UP');
+    animPrefix('singDOWN', 'Dad Sing Note DOWN');
+    animPrefix('singLEFT', 'Dad Sing Note LEFT');
+	animPrefix('singRIGHT', 'Dad Sing Note RIGHT');
+
+	setOffset('idle');
+	setOffset("singUP", -6, 50);
+    setOffset("singDOWN", 0, -30);
+    setOffset("singLEFT", -10, 10);
+	setOffset("singRIGHT", 0, 27);
+
+    play('idle');
+
+    singTimer = 6.1;
+}
