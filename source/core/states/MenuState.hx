@@ -2,10 +2,11 @@ package core.states;
 
 import flixel.effects.FlxFlicker;
 
-class MenuState extends BeatState {
+class MenuState extends BeatState
+{
 	var camFollow = new flixel.FlxObject(0, 0, 1, 1);
 	var menuItems = new FlxTypedGroup<FlxSprite>();
-    var mainUnder:FlxSprite;
+	var mainUnder:FlxSprite;
 	var mainBG:FlxSprite;
 	var menuData = [
 		{name: "story_mode", color: "FFD84C"},
@@ -14,28 +15,38 @@ class MenuState extends BeatState {
 		{name: "options", color: "6CFF8D"},
 		{name: "credits", color: "FF6BD6"}
 	];
+
 	static var curSelected:Int = 0;
+
 	var timeNotMoving:Float = 0;
 	var selectedIt:Bool = false;
 	var allowMouse:Bool = true;
 	var NORMAL_X:Int = 625;
 
-    override function create() {
-        super.create();
+	override function create()
+	{
+		super.create();
 		transOut = FlxTransitionableState.defaultTransOut;
 		DiscordClient.changePresence('In Main Menu');
 		persistentUpdate = persistentDraw = true;
 
+		if (!FlxG.sound.music.playing)
+		{
+			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+			FlxG.sound.music.fadeIn(4, 0, 0.7);
+			FlxG.sound.music.play();
+		}
+
 		var i = 'menu/desat';
-        var yScroll = 0.25;
+		var yScroll = 0.25;
 		mainBG = new FlxSprite().loadGraphic(Paths.image(i));
 		mainBG.antialiasing = Settings.data.antialiasing;
 		mainBG.scrollFactor.set(0, yScroll);
 		mainBG.setGraphicSize(Std.int(mainBG.width * 1.175));
 		mainBG.updateHitbox();
-        mainBG.screenCenter();
+		mainBG.screenCenter();
 		add(mainBG);
-		
+
 		mainUnder = new FlxSprite().loadGraphic(Paths.image(i));
 		mainUnder.antialiasing = Settings.data.antialiasing;
 		mainUnder.scrollFactor.set(0, yScroll);
@@ -49,7 +60,8 @@ class MenuState extends BeatState {
 		add(camFollow);
 		add(menuItems);
 
-		for (num => data in menuData) {
+		for (num => data in menuData)
+		{
 			var name = data.name;
 			var menuItem = new FlxSprite();
 			menuItem.frames = Paths.atlas('menu/_$name');
@@ -82,36 +94,45 @@ class MenuState extends BeatState {
 		fnfVer.borderSize = 1;
 		add(fnfVer);
 		changeMenu();
-		
-		FlxG.camera.follow(camFollow, null, 0.15);
-    }
 
-	override function update(elapsed:Float) {
-		if (!selectedIt) {
-			if (allowMouse && ((FlxG.mouse.deltaViewX != 0 || FlxG.mouse.deltaViewY != 0) || FlxG.mouse.justPressed)) { // MOUSE SUPPORT (Psych adapted)
+		FlxG.camera.follow(camFollow, null, 0.15);
+	}
+
+	override function update(elapsed:Float)
+	{
+		if (!selectedIt)
+		{
+			if (allowMouse && ((FlxG.mouse.deltaViewX != 0 || FlxG.mouse.deltaViewY != 0) || FlxG.mouse.justPressed))
+			{ // MOUSE SUPPORT (Psych adapted)
 				timeNotMoving = 0;
 				FlxG.mouse.visible = true;
 
 				var dist:Float = -1;
 				var distItem:Int = -1;
-				for (i in 0...menuItems.length) {
+				for (i in 0...menuItems.length)
+				{
 					var item = menuItems.members[i];
-					if (item != null && FlxG.mouse.overlaps(item)) {
+					if (item != null && FlxG.mouse.overlaps(item))
+					{
 						var dx = item.getGraphicMidpoint().x - FlxG.mouse.viewX;
 						var dy = item.getGraphicMidpoint().y - FlxG.mouse.viewY;
 						var distance = Math.sqrt(dx * dx + dy * dy);
-						if (dist < 0 || distance < dist) {
+						if (dist < 0 || distance < dist)
+						{
 							dist = distance;
 							distItem = i;
 						}
 					}
 				}
 
-				if (distItem != -1 && distItem != curSelected) {
+				if (distItem != -1 && distItem != curSelected)
+				{
 					curSelected = distItem;
 					changeMenu();
 				}
-			} else {
+			}
+			else
+			{
 				timeNotMoving += elapsed;
 				if (timeNotMoving >= 1.5)
 					FlxG.mouse.visible = false;
@@ -122,13 +143,15 @@ class MenuState extends BeatState {
 			else if (controls.UI_DOWN_P)
 				changeMenu(1);
 
-			if (controls.BACK) {
+			if (controls.BACK)
+			{
 				selectedIt = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				changeState(TitleState);
 			}
-			
-			if (controls.ACCEPT || (FlxG.mouse.justPressed && allowMouse)) {
+
+			if (controls.ACCEPT || (FlxG.mouse.justPressed && allowMouse))
+			{
 				selectedIt = true;
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 
@@ -136,19 +159,23 @@ class MenuState extends BeatState {
 					FlxFlicker.flicker(mainUnder, 1.1, 0.15, false);
 
 				var selectedItem = menuItems.members[curSelected];
-				FlxFlicker.flicker(selectedItem, 1, 0.06, false, false, function(_) {
-					switch (menuData[curSelected].name) {
-						//case 'story_mode': changeState(StoryState);
-						case 'freeplay': changeState(FreeplayState);
-						//case 'mods': changeState(ModsState);
-						//case 'options': changeState(OptionsState);
-						//case 'credits': changeState(CreditsState);
+				FlxFlicker.flicker(selectedItem, 1, 0.06, false, false, function(_)
+				{
+					switch (menuData[curSelected].name)
+					{
+						// case 'story_mode': changeState(StoryState);
+						case 'freeplay':
+							changeState(FreeplayState);
+						// case 'mods': changeState(ModsState);
+						// case 'options': changeState(OptionsState);
+						// case 'credits': changeState(CreditsState);
 						default:
 							Log.info('Menu ${menuData[curSelected].name} not implemented.');
 							selectedIt = false;
 					}
 				});
-				for (item in menuItems) {
+				for (item in menuItems)
+				{
 					if (item != selectedItem)
 						FlxTween.tween(item, {alpha: 0}, 0.4);
 				}
@@ -157,12 +184,14 @@ class MenuState extends BeatState {
 		super.update(elapsed);
 	}
 
-	function changeMenu(change = 0) {
+	function changeMenu(change = 0)
+	{
 		curSelected = flixel.math.FlxMath.wrap(curSelected + change, 0, menuData.length - 1);
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 
 		final SELECTED_X = NORMAL_X - 90;
-		for (item in menuItems) {
+		for (item in menuItems)
+		{
 			item.animation.play('idle');
 			item.centerOffsets();
 			item.x = FlxG.width / 2 - NORMAL_X;
@@ -172,11 +201,16 @@ class MenuState extends BeatState {
 		selectedItem.animation.play('selected');
 		selectedItem.centerOffsets();
 		var moreX:Float;
-		switch (menuData[curSelected].name) {
-			case 'freeplay': moreX = 16;
-			case 'options': moreX = 32;
-			case 'credits': moreX = 2;
-			default: moreX = 0;
+		switch (menuData[curSelected].name)
+		{
+			case 'freeplay':
+				moreX = 16;
+			case 'options':
+				moreX = 32;
+			case 'credits':
+				moreX = 2;
+			default:
+				moreX = 0;
 		}
 		selectedItem.x = FlxG.width / 2 - (SELECTED_X + moreX);
 		camFollow.y = selectedItem.getGraphicMidpoint().y;

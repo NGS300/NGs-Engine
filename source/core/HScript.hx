@@ -1,5 +1,7 @@
 package core;
 
+import flixel.math.FlxRandom;
+import openfl.display.BlendMode;
 import flixel.group.FlxGroup;
 import objects.BGAnim;
 import flixel.FlxObject;
@@ -10,33 +12,40 @@ import hscript.Interp;
 import sys.FileSystem;
 import sys.io.File;
 
-class HScript {
+class HScript
+{
 	public var interp(default, null):Interp;
 	public var path(default, null):String;
+
 	var canObjects:Bool = true;
 	var loaded:Bool = false;
 	var parser:Parser;
 
-	public function new(name:String, ?setObj:Bool) {
+	public function new(name:String, ?setObj:Bool)
+	{
 		canObjects = setObj ?? true;
 		path = name;
 		load();
 	}
 
-	public function reload():Void {
+	public function reload():Void
+	{
 		loaded = false;
 		load();
 	}
 
-	public function load():Void {
-		if (!FileSystem.exists(path)) {
+	public function load():Void
+	{
+		if (!FileSystem.exists(path))
+		{
 			trace('HScript: Arquivo não encontrado -> ' + path);
 			return;
 		}
 
 		parser = new Parser();
 		interp = new Interp();
-		try {
+		try
+		{
 			var content = File.getContent(path);
 			var program = parser.parseString(content);
 			interp.execute(program);
@@ -51,74 +60,114 @@ class HScript {
 			set("Type", Type);
 			set("StringTools", StringTools);
 
-			set("randomInt", function(min:Int, max:Int) {
+			set("trace", haxe.Log.trace);
+
+			set("randomInt", function(min:Int, max:Int)
+			{
 				return FlxG.random.int(min, max);
 			});
 
-			set("randomFloat", function(min:Float, max:Float) {
+			set("randomFloat", function(min:Float, max:Float)
+			{
 				return FlxG.random.float(min, max);
 			});
-			
+
+			set("randomBool", function(change:Float)
+			{
+				return FlxG.random.bool(change);
+			});
+
 			set("FlxTween", FlxTween);
 			set("FlxEase", FlxEase);
 			set("FlxTimer", FlxTimer);
-			if (canObjects) {
+			set("FlxTweenType", {
+				ONESHOT: cast FlxTweenType.ONESHOT,
+				PERSIST: cast FlxTweenType.PERSIST,
+				PINGPONG: cast FlxTweenType.PINGPONG,
+				LOOPING: cast FlxTweenType.LOOPING,
+				BACKWARD: cast FlxTweenType.BACKWARD,
+			});
+			if (canObjects)
+			{
 				set("Character", Character);
 				set("BGSprite", BGSprite);
 				set("BGAnim", BGAnim);
 				set("FlxSprite", FlxSprite);
 				set("FlxGroup", FlxGroup);
 				set('FlxSound', FlxSound);
+				set("BlendMode", {
+					NORMAL: cast BlendMode.NORMAL,
+					ADD: cast BlendMode.ADD,
+					MULTIPLY: cast BlendMode.MULTIPLY,
+					SCREEN: cast BlendMode.SCREEN,
+					SUBTRACT: cast BlendMode.SUBTRACT
+				});
 
-				set("add", function(obj:FlxBasic) {
+				set("add", function(obj:FlxBasic)
+				{
 					return FlxG.state.add(obj);
 				});
 
-				set("remove", function(obj:FlxBasic) {
+				set("remove", function(obj:FlxBasic)
+				{
 					return FlxG.state.remove(obj);
 				});
 
-				set("tween", function(obj:Dynamic, values:Dynamic, duration:Float, ?ease) {
+				set("tween", function(obj:Dynamic, values:Dynamic, duration:Float, ?ease)
+				{
 					return FlxTween.tween(obj, values, duration, {ease: ease});
 				});
 
-				set("destroy", function(obj:FlxBasic) {
+				set("destroy", function(obj:FlxBasic)
+				{
 					obj.destroy();
 				});
 
-				set("center", function(obj:FlxObject) {
+				set("center", function(obj:FlxObject)
+				{
 					obj.screenCenter();
 				});
 
-				set("setPos", function(obj:FlxObject, x:Float, y:Float) {
+				set("setPos", function(obj:FlxObject, x:Float, y:Float)
+				{
 					obj.setPosition(x, y);
 				});
 			}
-		} catch (e:Dynamic)
+		}
+		catch (e:Dynamic)
 			trace('HScript ERRO: ' + e);
 	}
 
-	public function exists(func:String):Bool {
-		if (!loaded) return false;
+	public function exists(func:String):Bool
+	{
+		if (!loaded)
+			return false;
 		return interp.variables.exists(func);
 	}
 
-	public function set(name:String, value:Dynamic):Void {
-		if (!loaded) return;
+	public function set(name:String, value:Dynamic):Void
+	{
+		if (!loaded)
+			return;
 		interp.variables.set(name, value);
 	}
 
-	public function get(name:String):Dynamic {
-		if (!loaded) return null;
+	public function get(name:String):Dynamic
+	{
+		if (!loaded)
+			return null;
 		return interp.variables.get(name);
 	}
 
-	public function call(func:String, ?args:Array<Dynamic>):Dynamic {
-		if (interp == null) return null;
+	public function call(func:String, ?args:Array<Dynamic>):Dynamic
+	{
+		if (interp == null)
+			return null;
 		if (!interp.variables.exists(func))
 			return null;
 
-		try {
+		try
+		{
 			var f = interp.variables.get(func);
 			return Reflect.callMethod(null, f, args == null ? [] : args);
 		}
@@ -127,40 +176,49 @@ class HScript {
 		return null;
 	}
 
-	public function destroy():Void {
+	public function destroy():Void
+	{
 		interp = null;
 		parser = null;
 		loaded = false;
 	}
 
-	function resolvePath(name:String):Dynamic {
+	function resolvePath(name:String):Dynamic
+	{
 		var parts = name.split(".");
 		var value:Dynamic = get(parts[0]);
-		for (i in 1...parts.length) {
-			if (value == null) return null;
+		for (i in 1...parts.length)
+		{
+			if (value == null)
+				return null;
 			value = Reflect.field(value, parts[i]);
 		}
 		return value;
 	}
 
-	public function getString(name:String):String {
+	public function getString(name:String):String
+	{
 		var value = resolvePath(name);
 		return (value != null) ? Std.string(value) : "";
 	}
 
-	public function getInt(name:String):Int {
+	public function getInt(name:String):Int
+	{
 		var value = resolvePath(name);
 		return (value != null) ? Std.parseInt(Std.string(value)) : 0;
 	}
 
-	public function getFloat(name:String):Float {
+	public function getFloat(name:String):Float
+	{
 		var value = resolvePath(name);
 		return (value != null) ? Std.parseFloat(Std.string(value)) : 0;
 	}
 
-	public function getBool(name:String):Bool {
+	public function getBool(name:String):Bool
+	{
 		var value = resolvePath(name);
-		if (value == null) return false;
+		if (value == null)
+			return false;
 
 		if (Std.isOfType(value, Bool))
 			return value;
@@ -169,15 +227,18 @@ class HScript {
 		return (str == "true" || str == "1");
 	}
 
-	public function getIntArray(name:String, ?limit:Int):Array<Int> {
+	public function getIntArray(name:String, ?limit:Int):Array<Int>
+	{
 		limit = (limit == null ? 2 : (limit < 1) ? 1 : limit);
 		var target:Dynamic = resolvePath(name);
 		var arr:Array<Dynamic> = cast target;
 
-		if (arr == null) arr = [];
+		if (arr == null)
+			arr = [];
 		var result:Array<Int> = [];
 
-		for (i in 0...limit) {
+		for (i in 0...limit)
+		{
 			if (i < arr.length && arr[i] != null)
 				result.push(Std.parseInt(Std.string(arr[i])));
 			else
@@ -186,15 +247,18 @@ class HScript {
 		return result;
 	}
 
-	public function getFloatArray(name:String, ?limit:Int):Array<Float> {
+	public function getFloatArray(name:String, ?limit:Int):Array<Float>
+	{
 		limit = (limit == null ? 2 : (limit < 1) ? 1 : limit);
 		var target:Dynamic = resolvePath(name);
 		var arr:Array<Dynamic> = cast target;
 
-		if (arr == null) arr = [];
+		if (arr == null)
+			arr = [];
 		var result:Array<Float> = [];
 
-		for (i in 0...limit) {
+		for (i in 0...limit)
+		{
 			if (i < arr.length && arr[i] != null)
 				result.push(Std.parseFloat(Std.string(arr[i])));
 			else
@@ -203,22 +267,28 @@ class HScript {
 		return result;
 	}
 
-	public function getBoolArray(name:String, ?limit:Int):Array<Bool> {
+	public function getBoolArray(name:String, ?limit:Int):Array<Bool>
+	{
 		limit = (limit == null ? 2 : (limit < 1) ? 1 : limit);
 		var target:Dynamic = resolvePath(name);
 		var arr:Array<Dynamic> = cast target;
 
-		if (arr == null) arr = [];
+		if (arr == null)
+			arr = [];
 		var result:Array<Bool> = [];
 
-		function toBool(v:Dynamic):Bool {
-			if (v == null) return false;
-			if (Std.isOfType(v, Bool)) return v;
+		function toBool(v:Dynamic):Bool
+		{
+			if (v == null)
+				return false;
+			if (Std.isOfType(v, Bool))
+				return v;
 			var str = Std.string(v).toLowerCase();
 			return (str == "true" || str == "1");
 		}
 
-		for (i in 0...limit) {
+		for (i in 0...limit)
+		{
 			if (i < arr.length)
 				result.push(toBool(arr[i]));
 			else

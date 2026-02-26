@@ -1,14 +1,105 @@
+var holoLeft;
+var holoRight;
+var alreadyFlashed = false;
+
+var colors = [
+	0xFF00B922,
+	0xFFFFE132,
+	0xFFF5274E,
+	0xFF3641FF,
+	0xFF04CDFB,
+	0xFFFFFFFF,
+];
+
 function onCreate() {
     var bg = new BGSprite(-600, -200, 'back', 'week1', 0.9, 0.9);
 	add(bg);
-	
-	var stageFront = new BGSprite(-650, 600, 'front', 'week1', 0.9, 0.9);
-	stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-	stageFront.updateHitbox();
-	add(stageFront);
-	
+
+	if (Settings.data.effects)
+	{
+		var stageFront = new BGSprite(-650, 600, 'front', 'week1', 0.9, 0.9);
+		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+		stageFront.updateHitbox();
+		add(stageFront);
+		
+		var scaleSpriteX = 0.86;
+		var spriteY = 800;
+		holoLeft = new BGSprite(300, 0, 'holo', 'week1', 0.9, 0.9);
+		holoLeft.angle = 0;
+		holoLeft.scale.set(scaleSpriteX, 2.3);
+		holoLeft.origin.set(holoLeft.width, holoLeft.height / 2);
+		holoLeft.screenCenter();
+		holoLeft.x -= 1400;
+		holoLeft.y -= spriteY;
+		holoLeft.blend = BlendMode.ADD;
+		holoLeft.alpha = 0;
+		add(holoLeft);
+
+
+		holoRight = new BGSprite(300, 0, 'holo', 'week1', 0.9, 0.9);
+		holoRight.angle = 0;
+		holoRight.scale.set(scaleSpriteX, 2.3);
+		holoRight.origin.set(holoRight.width, holoRight.height / 2);
+		holoRight.screenCenter();
+		holoRight.x -= FlxG.width / 2 - 700;
+		holoRight.y -= spriteY;
+		holoRight.blend = BlendMode.ADD;
+		holoRight.alpha = 0;
+		add(holoRight);
+
+		FlxTween.angle(holoLeft, -115, -97, 2.6, { ease: FlxEase.sineInOut, type: FlxTweenType.PINGPONG });
+		FlxTween.angle(holoRight, -77, -97, 2.6, { ease: FlxEase.sineInOut, type: FlxTweenType.PINGPONG });
+	}
+
 	var stageCurtains = new BGSprite(-500, -300, 'curtains', 'week1', 1.3, 1.3);
 	stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
 	stageCurtains.updateHitbox();
 	add(stageCurtains);
+
+	trace("hey");
+}
+
+function onUpdate(elapsed) {
+	if (Settings.data.effects)
+	{
+		holoLeft.alpha -= 0.75 * elapsed;
+		holoRight.alpha -= 0.75 * elapsed;
+	}
+}
+
+
+function flashHolo() {
+	if (alreadyFlashed)
+	{
+		holoRight.alpha = 1;
+		holoRight.color = colors[randomInt(0, colors.length - 1)];
+	}
+	else
+	{
+		holoLeft.alpha = 1;
+		holoLeft.color = colors[randomInt(0, colors.length - 1)];
+	}
+	alreadyFlashed = !alreadyFlashed;
+}
+
+function hey() {
+	trace("hey");
+}
+
+function onBeat() {
+	// Where it starts || where it ends
+	if (Settings.data.effects)
+	{
+		if(curBeat > 5 && curBeat < 130)
+		{
+			if(curBeat % 8 == 7)
+			{
+				//trace("hey");
+				flashHolo();
+			}
+		}
+
+		if (curBeat % 2)
+			flashHolo();
+	}
 }
