@@ -1,8 +1,11 @@
 package core.states;
 
+import flixel.graphics.frames.FlxFilterFrames;
+import openfl.filters.GlowFilter;
 import objects.Alphabet;
 
-class FreeplayState extends BeatState {
+class FreeplayState extends BeatState
+{
 	var songs:Array<SongMetadata> = [];
 
 	var selector:FlxText;
@@ -16,11 +19,14 @@ class FreeplayState extends BeatState {
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var iconArray:Array<HealthIcon> = [];
+	private var glowArray:Array<FlxSprite> = [];
 
-	override function create() {
+	override function create()
+	{
 		transOut = FlxTransitionableState.defaultTransOut;
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('songList'));
-		for (i in 0...initSonglist.length) {
+		for (i in 0...initSonglist.length)
+		{
 			var data:Array<String> = initSonglist[i].split(':');
 			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
 		}
@@ -35,16 +41,28 @@ class FreeplayState extends BeatState {
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 
-		for (i in 0...songs.length) {
+		for (i in 0...songs.length)
+		{
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false, true);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
 
+			var glowIcon:FlxSprite = new FlxSprite();
+			glowIcon.loadGraphic(Paths.image("light"));
+			glowIcon.color = 0xFF000000;
+			glowIcon.centerOrigin();
+			// glowIcon.setSize()
+			// glowIcon.scale.set(1.2);
+			glowIcon.scale.x = 2;
+			glowIcon.scale.y = 2;
+			// trace(glowIcon.scale);
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
 
 			iconArray.push(icon);
+			glowArray.push(glowIcon);
+			add(glowIcon);
 			add(icon);
 		}
 
@@ -73,19 +91,22 @@ class FreeplayState extends BeatState {
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)
 		songs.push(new SongMetadata(songName, weekNum, songCharacter));
 
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>) {
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
+	{
 		if (songCharacters == null)
 			songCharacters = ['dad'];
 
 		var num:Int = 0;
-		for (song in songs) {
+		for (song in songs)
+		{
 			addSong(song, weekNum, songCharacters[num]);
 			if (songCharacters.length != 1)
 				num++;
 		}
 	}
 
-	override function update(elapsed:Float) {
+	override function update(elapsed:Float)
+	{
 		super.update(elapsed);
 
 		if (FlxG.sound.music.volume < 0.7)
@@ -95,6 +116,12 @@ class FreeplayState extends BeatState {
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
+
+		for (i in 0...iconArray.length)
+		{
+			glowArray[i].y = iconArray[i].y;
+			glowArray[i].x = iconArray[i].x;
+		}
 
 		var accepted = controls.ACCEPT;
 		if (controls.UI_UP_P)
@@ -110,24 +137,31 @@ class FreeplayState extends BeatState {
 		if (controls.BACK)
 			changeState(MenuState);
 
-		if (accepted) {
+		if (accepted)
+		{
 			var songLowercase = StringTools.replace(songs[curSelected].songName, " ", "-").toLowerCase();
-			switch (songLowercase) {
-				case 'dad-battle': songLowercase = 'dadbattle';
-				case 'philly-nice': songLowercase = 'philly';
+			switch (songLowercase)
+			{
+				case 'dad-battle':
+					songLowercase = 'dadbattle';
+				case 'philly-nice':
+					songLowercase = 'philly';
 			}
 
 			var songHighscore = StringTools.replace(songs[curSelected].songName, " ", "-");
-			switch (songHighscore) {
-				case 'Dad-Battle': songHighscore = 'Dadbattle';
-				case 'Philly-Nice': songHighscore = 'Philly';
+			switch (songHighscore)
+			{
+				case 'Dad-Battle':
+					songHighscore = 'Dadbattle';
+				case 'Philly-Nice':
+					songHighscore = 'Philly';
 			}
-			
+
 			trace(songLowercase);
 
 			var poop:String = Highscore.formatSong(songHighscore, curDifficulty);
 			trace(poop);
-			
+
 			PlayState.SONG = Song.loadFromJson(poop, songLowercase);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
@@ -148,11 +182,14 @@ class FreeplayState extends BeatState {
 
 		// adjusting the highscore song name to be compatible (changeDiff)
 		var songHighscore = StringTools.replace(songs[curSelected].songName, " ", "-");
-		switch (songHighscore) {
-			case 'Dad-Battle': songHighscore = 'Dadbattle';
-			case 'Philly-Nice': songHighscore = 'Philly';
+		switch (songHighscore)
+		{
+			case 'Dad-Battle':
+				songHighscore = 'Dadbattle';
+			case 'Philly-Nice':
+				songHighscore = 'Philly';
 		}
-		
+
 		#if !switch
 		intendedScore = Highscore.getScore(songHighscore, curDifficulty);
 		#end
@@ -185,13 +222,16 @@ class FreeplayState extends BeatState {
 			curSelected = 0;
 
 		// selector.y = (70 * curSelected) + 30;
-		
+
 		// adjusting the highscore song name to be compatible (changeSelection)
 		// would read original scores if we didn't change packages
 		var songHighscore = StringTools.replace(songs[curSelected].songName, " ", "-");
-		switch (songHighscore) {
-			case 'Dad-Battle': songHighscore = 'Dadbattle';
-			case 'Philly-Nice': songHighscore = 'Philly';
+		switch (songHighscore)
+		{
+			case 'Dad-Battle':
+				songHighscore = 'Dadbattle';
+			case 'Philly-Nice':
+				songHighscore = 'Philly';
 		}
 
 		#if !switch
@@ -208,9 +248,11 @@ class FreeplayState extends BeatState {
 		for (i in 0...iconArray.length)
 		{
 			iconArray[i].alpha = 0.6;
+			glowArray[i].alpha = 0.6;
 		}
 
 		iconArray[curSelected].alpha = 1;
+		glowArray[curSelected].alpha = 1;
 
 		for (item in grpSongs.members)
 		{

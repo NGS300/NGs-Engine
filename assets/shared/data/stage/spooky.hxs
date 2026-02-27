@@ -3,25 +3,32 @@ var lightningOffset = 8;
 var bg;
 
 function onCreate() {
-    bg = new BGAnim(-200, -100, 'bg', 'week2', ['bg', 'lightning']);
+    //bg = new BGAnim(-200, -100, 'hallo_bg', 'week2', ['bg', 'lightning']);
+    bgSprite = new BGSprite(-200, -100, 'hallo_bg', 'week2');
+    bglight = new BGSprite(-200, -100, 'hallo_bg_light', "week2");
+    bglight.alpha = 1;
     add(bg);
 }
 
 function onBeat() {
     if (Settings.data.distractions && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
-	    lightningStrike();
+        lightningStrike();
+}
+
+function onUpdate(elapsed) {
+    
 }
 
 function lightningStrike() {
-	FlxG.sound.play(Paths.soundRandom('thunder', 1, 2, 'week2'));
-	bg.play('lightning');
+    FlxG.sound.play(Paths.soundRandom('thunder', 1, 2, 'week2'));
+    //bg.play('lightning');
 
-	lightningStrikeBeat = curBeat;
-	lightningOffset = FlxG.random.int(8, 24);
+    lightningStrikeBeat = curBeat;
+    lightningOffset = FlxG.random.int(8, 24);
 
-	if (BF.hasAnim('scared'))
-		BF.play('scared', true);
+    if (BF.hasAnim('scared'))
+        BF.play('scared', true);
 
-	if (GF != null && GF.hasAnim('scared'))
-		GF.play('scared', true);
+    if (GF != null && GF.hasAnim('scared'))
+        GF.play('scared', true);
 }
