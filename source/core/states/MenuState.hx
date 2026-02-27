@@ -26,9 +26,9 @@ class MenuState extends BeatState {
 		DiscordClient.changePresence('In Main Menu');
 		persistentUpdate = persistentDraw = true;
 
-		var i = 'menu/desat';
+		var i = 'menus/main';
         var yScroll = 0.25;
-		mainBG = new FlxSprite().loadGraphic(Paths.image(i));
+		mainBG = new FlxSprite().loadGraphic(Paths.image('$i/desat'));
 		mainBG.antialiasing = Settings.data.antialiasing;
 		mainBG.scrollFactor.set(0, yScroll);
 		mainBG.setGraphicSize(Std.int(mainBG.width * 1.175));
@@ -36,7 +36,7 @@ class MenuState extends BeatState {
         mainBG.screenCenter();
 		add(mainBG);
 		
-		mainUnder = new FlxSprite().loadGraphic(Paths.image(i));
+		mainUnder = new FlxSprite().loadGraphic(Paths.image('$i/desat'));
 		mainUnder.antialiasing = Settings.data.antialiasing;
 		mainUnder.scrollFactor.set(0, yScroll);
 		mainUnder.setGraphicSize(Std.int(mainUnder.width * 1.175));
@@ -52,7 +52,7 @@ class MenuState extends BeatState {
 		for (num => data in menuData) {
 			var name = data.name;
 			var menuItem = new FlxSprite();
-			menuItem.frames = Paths.atlas('menu/_$name');
+			menuItem.frames = Paths.atlas('$i/_$name');
 			menuItem.animation.addByPrefix('idle', '$name idle', 24, true);
 			menuItem.animation.addByPrefix('selected', '$name selected', 24, true);
 			menuItem.animation.play('idle');

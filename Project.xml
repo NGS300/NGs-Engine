@@ -55,6 +55,7 @@
 	<haxelib name="hxcpp-debug-server" if="debug" />
 
 	<!-- ========================== Haxedefines ================================= -->
+	<haxedef name="hscriptPos" />
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />

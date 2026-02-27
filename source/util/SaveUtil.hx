@@ -133,3 +133,25 @@ class SaveUtil extends FlxSave {
         }
     }
 }
+
+class Scores {
+	public static function setFreeplayScore(key:String, score:Int):Void {
+		var slot = Highscore.freeplayScores;
+		slot.set(key, score);
+
+		var save = new FlxSave();
+        save.bind('freeplayScores_v1', SaveUtil.savePath());
+        save.data.freeplayScores = slot;
+        save.flush();
+	}
+
+	public static function setWeekScore(key:String, score:Int):Void {
+		var slot = Highscore.weekScores;
+		slot.set(key, score);
+
+		var save = new FlxSave();
+        save.bind('weekScores_v1', SaveUtil.savePath());
+        save.data.freeplayScores = slot;
+        save.flush();
+	}
+}

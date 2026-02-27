@@ -30,33 +30,12 @@ class Stage extends FlxBasic {
     public function new(?daStage:String) {
         super();
 		curStage = daStage ?? 'stage';
-        //PlayState.curStage = curStage;
 		create(curStage);
 	}
 
-    var names = new Map<String, Bool>();
-    function addName(n:String) {
-        if (!names.exists(n))
-            names.set(n, true);
-    }
-
     public function create(stage:String) {
         var song = PlayState.SONG;
-        var stageName = switch (song.stage) {
-            case 'halloween': 'spooky';
-            default: curStage;
-        }
-        addName(stageName.toLowerCase());
-        addName(stageName.toUpperCase());
-        addName(stageName.substr(0, 1).toUpperCase() + stageName.substr(1).toLowerCase());
-
-        for (name in names.keys()) {
-            var path = Paths.hxs('stage/$name');
-            if (OpenFlAssets.exists(path)) {
-                script = new HScript(path);
-                break;
-            }
-        }
+        script = new HScript('stage/$stage');
         script.set("song", song);
         script.set("Stage", this);
         script.set("stage", { name: curStage, pixel: false });
@@ -65,7 +44,6 @@ class Stage extends FlxBasic {
         script.set("gf", { position: [400, 130], camPos: [0, 0] });
         script.set("dad", { position: [100, 100], camPos: [0, 0] });
         script.set("bf", { position: [770, 100], camPos: [0, 0] });
-        script.call("onCreate");
 
         var gfVersion = switch (song.gfVersion) {
 			case 'gf-car': 'gf-car';
@@ -81,6 +59,7 @@ class Stage extends FlxBasic {
         
         bf = characterPos("bf", song.player1);
         script.set("BF", bf);
+        script.call("onCreate");
 
         cam_gf  = script.getFloatArray("gf.camPos");
         cam_dad = script.getFloatArray("dad.camPos");

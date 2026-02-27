@@ -7,11 +7,10 @@ import flash.media.Sound;
 	** A Core class which handles determining asset paths.
  */
 class Paths {
-	public static function clearUnusedCache()
-		PathsUtil.clearUnusedMemory();
-
 	public static function clearMemoryCache()
 		PathsUtil.clearStoredMemory();
+	public static function clearUnusedCache()
+		PathsUtil.clearUnusedMemory();
 
 	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType):String
 		return PathsUtil.getPath(file, folder, type ?? TEXT);
@@ -19,8 +18,8 @@ class Paths {
 	public static function font(key:String, ?folder:String, print = true):String
 		return PathsUtil.font(key, folder, print);
 
-	public static function hxs(key:String, ?folder:String, ?isData:Bool):String
-		return PathsUtil.hscript(key, folder, isData);
+	public static function hxs(key:String, ?folder:String, ?isScript:Bool):String
+		return PathsUtil.hscript(key, folder, isScript);
 
 	public static function text(key:String, ?folder:String, print = true):String
 		return PathsUtil.data(key, folder, print);
@@ -28,8 +27,8 @@ class Paths {
 	public static function txt(key:String, ?folder:String, print = true):String
 		return PathsUtil.data(key, folder, print);
 
-	public static function json(key:String, ?folder:String, print = true):String
-		return PathsUtil.data(key, folder, print);
+	public static function json(key:String, ?folder:String):String
+		return PathsUtil.json(key, folder);
 
 	public static function sound(key:String, ?folder:String, print = true):Sound
 		return PathsUtil.sound(key, folder, print);

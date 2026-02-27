@@ -1,9 +1,12 @@
 package objects;
 
+import core.HScript;
+
 class Character extends CharSprite {
     public var cameraPosition:Array<Float> = [0, 0];
     public var positionArray:Array<Float> = [0, 0];
     public var stunned:Bool = false;
+    var script:HScript;
     public function new(?x:Float, ?y:Float, ?char:String, ?isPlayer:Bool) {
         super(x ?? 0, y ?? 0, char, isPlayer);
         change(char ?? 'bf');
@@ -12,7 +15,8 @@ class Character extends CharSprite {
     public function change(char:String) {
         offsets = [];
         curCharacter = char;
-        script = getFolder(char);
+        script = new HScript('characters/$char');
+        script.canObjects = false;
         script.set('loadAtlas', loadAtlas);
 
         script.set('animPrefix', newPrefix);
@@ -20,8 +24,6 @@ class Character extends CharSprite {
         script.set('setOffset', newOffset);
         script.set('play', playAnim);
 
-        script.set('x', x);
-        script.set('y', y);
         script.set('flipY', flipY);
         script.set('width', width);
         script.set('height', height);

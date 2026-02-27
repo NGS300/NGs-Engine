@@ -1,25 +1,20 @@
 package core;
 
-import flixel.group.FlxGroup;
-import objects.BGAnim;
-import flixel.FlxObject;
-import objects.BGSprite;
-import flixel.FlxBasic;
 import hscript.Parser;
 import hscript.Interp;
-import sys.FileSystem;
-import sys.io.File;
+import flixel.FlxBasic;
+import flixel.FlxObject;
+import openfl.display.BlendMode;
 
 class HScript {
 	public var interp(default, null):Interp;
 	public var path(default, null):String;
-	var canObjects:Bool = true;
+	public var canObjects:Bool = true;
 	var loaded:Bool = false;
 	var parser:Parser;
 
-	public function new(name:String, ?setObj:Bool) {
-		canObjects = setObj ?? true;
-		path = name;
+	public function new(name:String, ?folder:String, ?isScript:Bool) {
+		path = Paths.hxs(name, folder, isScript).toLowerCase();
 		load();
 	}
 
@@ -29,26 +24,30 @@ class HScript {
 	}
 
 	public function load():Void {
-		if (!FileSystem.exists(path)) {
-			trace('HScript: Arquivo não encontrado -> ' + path);
+		if (!sys.FileSystem.exists(path)) {
+			trace("[HScript ERROR]");
+			trace("File not found: " + path);
 			return;
 		}
 
 		parser = new Parser();
 		interp = new Interp();
 		try {
-			var content = File.getContent(path);
+			var content = sys.io.File.getContent(path);
 			var program = parser.parseString(content);
 			interp.execute(program);
 			loaded = true;
 			set("instance", this);
+			set('trace', haxe.Log.trace);
+
+			set("Paths", Paths);
+			set("Settings", Settings);
+
 			set("FlxG", FlxG);
 			set("Std", Std);
 			set("Math", Math);
-			set("Paths", Paths);
-			set("Reflect", Reflect);
-			set("Settings", Settings);
 			set("Type", Type);
+			set("Reflect", Reflect);
 			set("StringTools", StringTools);
 
 			set("randomInt", function(min:Int, max:Int) {
@@ -58,16 +57,55 @@ class HScript {
 			set("randomFloat", function(min:Float, max:Float) {
 				return FlxG.random.float(min, max);
 			});
+
+			set("randomBool", function(change:Float) {
+                return FlxG.random.bool(change);
+            });
 			
 			set("FlxTween", FlxTween);
+			set("FlxTweenType", {
+				PINGPONG: cast PINGPONG,
+				LOOPING: cast LOOPING,
+				ONESHOT: cast ONESHOT,
+				BACKWARD: cast BACKWARD
+			});
+			set("PINGPONG", cast PINGPONG);
+			set("LOOPING", cast LOOPING);
+			set("ONESHOT", cast ONESHOT);
+			set("BACKWARD", cast BACKWARD);
+			set("PERSIST", cast PERSIST);
+			
 			set("FlxEase", FlxEase);
+			set("Ease", {
+				Linear: FlxEase.linear,
+				QuadIn: FlxEase.quadIn,
+				QuadOut: FlxEase.quadOut,
+				QuartOut: FlxEase.quartOut,
+				BounceOut: FlxEase.bounceOut
+			});
+
+			set("Linear", FlxEase.linear);
+			set("QuadIn", FlxEase.quadIn);
+			set("QuadOut", FlxEase.quadOut);
+			set("QuartOut", FlxEase.quartOut);
+			set("QuartInOut", FlxEase.quartInOut);
+			set("BounceOut", FlxEase.bounceOut);
+
 			set("FlxTimer", FlxTimer);
 			if (canObjects) {
 				set("Character", Character);
-				set("BGSprite", BGSprite);
-				set("BGAnim", BGAnim);
-				set("FlxSprite", FlxSprite);
+				set("BGSprite", objects.BGSprite);
+				set("BGAnim", objects.BGAnim);
 				set("FlxGroup", FlxGroup);
+				set("FlxSprite", FlxSprite);
+				set("BlendMode", {
+					NORMAL: cast BlendMode.NORMAL,
+					ADD: cast BlendMode.ADD,
+					MULTIPLY: cast BlendMode.MULTIPLY,
+					SCREEN: cast BlendMode.SCREEN,
+					SUBTRACT: cast BlendMode.SUBTRACT
+				});
+
 				set('FlxSound', FlxSound);
 
 				set("add", function(obj:FlxBasic) {
@@ -78,8 +116,12 @@ class HScript {
 					return FlxG.state.remove(obj);
 				});
 
-				set("tween", function(obj:Dynamic, values:Dynamic, duration:Float, ?ease) {
+				set("tween", function(obj:Dynamic, values:Dynamic, ?duration:Float, ?ease) {
 					return FlxTween.tween(obj, values, duration, {ease: ease});
+				});
+
+				set("angle", function(obj:Dynamic, fromAngle:Float, toAngle:Float, ?duration:Float, ?ease) {
+					return FlxTween.angle(obj, fromAngle, toAngle, duration, {ease: ease});
 				});
 
 				set("destroy", function(obj:FlxBasic) {
@@ -94,8 +136,19 @@ class HScript {
 					obj.setPosition(x, y);
 				});
 			}
-		} catch (e:Dynamic)
-			trace('HScript ERRO: ' + e);
+		} catch (e:hscript.Expr.Error) { // Parse-time error (syntax errors)
+			trace("[HScript PARSE ERROR]");
+			trace("File: " + path);
+			trace("Line: " + e.line);
+			trace("Message: " + e.e);
+			return;
+		} catch (e:Dynamic) { // Runtime error during script execution
+			trace("[HScript EXECUTION ERROR]");
+			trace("File: " + path);
+			trace(e);
+			trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack())); // Optional: print stack trace
+			return;
+		}
 	}
 
 	public function exists(func:String):Bool {
@@ -121,9 +174,20 @@ class HScript {
 		try {
 			var f = interp.variables.get(func);
 			return Reflect.callMethod(null, f, args == null ? [] : args);
+		} catch (e:hscript.Expr.Error) { // Runtime error inside script function
+			trace("[HScript RUNTIME ERROR]");
+			trace("File: " + path);
+			trace("Function: " + func);
+			trace("Line: " + e.line);
+			trace("Message: " + e.e);
+		} catch (e:Dynamic) { // Generic runtime error
+			trace("[HScript RUNTIME ERROR]");
+			trace("File: " + path);
+			trace("Function: " + func);
+			trace(e);
+			trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack())); // Optional: print stack trace
 		}
-		catch (e:Dynamic)
-			trace('[HScript ERROR] Function: ' + func + ' -> ' + e);
+
 		return null;
 	}
 
@@ -169,15 +233,40 @@ class HScript {
 		return (str == "true" || str == "1");
 	}
 
-	public function getIntArray(name:String, ?limit:Int):Array<Int> {
-		limit = (limit == null ? 2 : (limit < 1) ? 1 : limit);
+	public function getStringArray(name:String, ?limit:Int):Array<String> {
 		var target:Dynamic = resolvePath(name);
 		var arr:Array<Dynamic> = cast target;
-
 		if (arr == null) arr = [];
-		var result:Array<Int> = [];
 
-		for (i in 0...limit) {
+		var max:Int;
+		if (limit == null) max = 2;
+		else if (limit < 0) max = arr.length;
+		else if (limit < 1) max = 1;
+		else max = limit;
+
+		var result:Array<String> = [];
+		for (i in 0...max) {
+			if (i < arr.length && arr[i] != null)
+				result.push(Std.string(arr[i]));
+			else
+				result.push("");
+		}
+		return result;
+	}
+
+	public function getIntArray(name:String, ?limit:Int):Array<Int> {
+		var target:Dynamic = resolvePath(name);
+		var arr:Array<Dynamic> = cast target;
+		if (arr == null) arr = [];
+
+		var max:Int;
+		if (limit == null) max = 2;
+		else if (limit < 0) max = arr.length;
+		else if (limit < 1) max = 1;
+		else max = limit;
+
+		var result:Array<Int> = [];
+		for (i in 0...max) {
 			if (i < arr.length && arr[i] != null)
 				result.push(Std.parseInt(Std.string(arr[i])));
 			else
@@ -187,14 +276,18 @@ class HScript {
 	}
 
 	public function getFloatArray(name:String, ?limit:Int):Array<Float> {
-		limit = (limit == null ? 2 : (limit < 1) ? 1 : limit);
 		var target:Dynamic = resolvePath(name);
 		var arr:Array<Dynamic> = cast target;
-
 		if (arr == null) arr = [];
-		var result:Array<Float> = [];
 
-		for (i in 0...limit) {
+		var max:Int;
+		if (limit == null) max = 2;
+		else if (limit < 0) max = arr.length;
+		else if (limit < 1) max = 1;
+		else max = limit;
+
+		var result:Array<Float> = [];
+		for (i in 0...max) {
 			if (i < arr.length && arr[i] != null)
 				result.push(Std.parseFloat(Std.string(arr[i])));
 			else
@@ -204,13 +297,17 @@ class HScript {
 	}
 
 	public function getBoolArray(name:String, ?limit:Int):Array<Bool> {
-		limit = (limit == null ? 2 : (limit < 1) ? 1 : limit);
 		var target:Dynamic = resolvePath(name);
 		var arr:Array<Dynamic> = cast target;
-
 		if (arr == null) arr = [];
-		var result:Array<Bool> = [];
 
+		var max:Int;
+		if (limit == null) max = 2;
+		else if (limit < 0) max = arr.length;
+		else if (limit < 1) max = 1;
+		else max = limit;
+
+		var result:Array<Bool> = [];
 		function toBool(v:Dynamic):Bool {
 			if (v == null) return false;
 			if (Std.isOfType(v, Bool)) return v;
@@ -218,7 +315,7 @@ class HScript {
 			return (str == "true" || str == "1");
 		}
 
-		for (i in 0...limit) {
+		for (i in 0...max) {
 			if (i < arr.length)
 				result.push(toBool(arr[i]));
 			else

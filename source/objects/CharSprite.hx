@@ -1,8 +1,5 @@
 package objects;
 
-import core.HScript;
-import openfl.utils.Assets as OpenFlAssets;
-
 class CharSprite extends FlxSprite {
     public var offsets:Map<String, Array<Dynamic>>;
     public var specialAnim:Bool = false;
@@ -18,7 +15,6 @@ class CharSprite extends FlxSprite {
 
     public var debugMode:Bool = false;
     var _lastAnim:String;
-    var script:HScript;
     public function new(x:Float, y:Float, ?char:String, ?isPlayer:Bool) {
         super(x, y);
         offsets = new Map<String, Array<Dynamic>>();
@@ -73,17 +69,6 @@ class CharSprite extends FlxSprite {
             }
         }
         super.update(elapsed);
-    }
-
-    function getFolder(key:String):HScript {
-        var folders = ["bf", "gf", "opponent"];
-        for (folder in folders) {
-            var path = Paths.hxs('characters/$key');
-            if (OpenFlAssets.exists(path))
-                return new HScript(path, false);
-        }
-        trace('Character script not found: $key');
-        return null;
     }
 
     public function loadAtlas(file:String, ?folder:String)

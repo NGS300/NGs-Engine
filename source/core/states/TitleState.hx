@@ -42,14 +42,15 @@ class TitleState extends BeatState {
 	}
 
 	function startIntro():Void {
-		var i = 'title/';
+		var i = 'menus/title/';
 		Conductor.changeBPM(102);
 		//Conductor.bpm = 102;
 		persistentUpdate = true;
 
-		if (!initialized && FlxG.sound.music == null)
+		if (!initialized && FlxG.sound.music == null) {
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-		FlxG.sound.music.fadeIn(4, 0, 0.7);
+			FlxG.sound.music.fadeIn(4, 0, 0.7);
+		}
 
 		add(new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK).screenCenter());
 		gradDown = new FlxSprite(0, 510, Paths.image(i + 'gradient'));

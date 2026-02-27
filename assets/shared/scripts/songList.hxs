@@ -1,0 +1,6 @@
+function onCreate() {
+    songs('Tutorial', 'gf');
+    songs(['Bopeebo', 'Fresh', 'DadBattle'], 'dad');
+    songs(['Spookeez', 'South'], 'spooky');
+    songs(['Pico', 'Philly Nice', 'Blammed'], 'pico');
+}

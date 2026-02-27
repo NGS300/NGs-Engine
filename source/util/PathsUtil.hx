@@ -112,7 +112,7 @@ class PathsUtil {
 		return OpenFlAssets.exists(path, type);
 	}
 
-	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType, ?canPrint:Bool):String {
+	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType):String {
 		var ty = type ?? TEXT;
 		#if MODS_ALLOWED
 		if (true) {
@@ -129,13 +129,6 @@ class PathsUtil {
 			if (OpenFlAssets.exists(levelPath, ty))
 				return levelPath;
 		}
-
-		var print = canPrint ?? false;
-		if (print) {
-			Log.info('Folder not found: $folder');
-			Log.info('use default folder: shared and Skiped');
-		}
-
 
 		return getSharedPath(file);
 	}
@@ -165,9 +158,9 @@ class PathsUtil {
 		return null;
 	}
 
-	public static function hscript(key:String, ?folder:String, ?isData:Bool):String {
-		var canData = isData ?? true;
-		var str = (!canData ? '' : 'data/') + '$key';
+	public static function hscript(key:String, ?folder:String, ?isScript:Bool):String {
+		var canScript = isScript ?? true;
+		var str = (!canScript ? '' : 'scripts/') + '$key';
 		return getPath('$str.hxs', folder);
 	}
 
@@ -184,6 +177,9 @@ class PathsUtil {
 		return null;
 	}
 
+	public static function json(key:String, ?folder:String, ?isScript:Bool):String
+		return getPath('data/$key.json', folder);
+
 	public static function sound(key:String, ?folder:String, canPrint = true):Sound
 		return cacheSound('sounds/$key', folder, canPrint);
 
@@ -191,10 +187,10 @@ class PathsUtil {
 		return cacheSound('music/$key', folder, canPrint);
 
 	inline static public function inst(song:String, canPrint = true):Sound
-		return cacheSound(SongUtil.normalizePathName(song) + '/Inst', 'songs', true);
+		return cacheSound(CoolUtil.normalizeName(song) + '/Inst', 'songs', true);
 
 	inline static public function voices(song:String, ?postfix:String, canPrint = true):Sound {
-		var songKey = SongUtil.normalizePathName(song) + '/Voices';
+		var songKey = CoolUtil.normalizeName(song) + '/Voices';
 		if (postfix != null)
 			songKey += '-' + postfix;
 		return cacheSound(songKey, 'songs', true);

@@ -40,30 +40,6 @@ class SongUtil {
 	}
 
 	/**
-	 * Normalizes the folder name to be compatible with different naming variations.
-	 * Converts spaces/hyphens, lowercase, and handles special cases.
-	 */
-	inline static public function normalizePathName(value:String):String {
-		if (value == null)
-			return "";
-		final invalidChars = ~/[~&;:<>#\s]/g;
-		final hideChars = ~/[.,'"%?!]/g;
-
-		var out = value.trim();
-		out = invalidChars.replace(out, "-");
-		out = hideChars.replace(out, "");
-		out = out.split("--").join("-");
-		out = out.toLowerCase();
-		switch (out) {
-			case "dad-battle", "dadbattle":
-				out = "dadbattle";
-			case "philly-nice", "phillynice":
-				out = "philly";
-		}
-		return out;
-	}
-
-	/**
 	 * Wraps a string to a new line based on a max character length per line.
 	 * 1. Forces a line break when a semicolon followed by a space ("; ") is found.
 	 * 2. Implements mandatory word break/hyphenation if needed.

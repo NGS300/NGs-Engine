@@ -57,8 +57,18 @@ class Song {
 		return parseJSONshit(rawJson);
 	}
 
-	public static function parseJSONshit(rawJson:String):SwagSong {
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+	public static function load(input:String, ?folder:String):SwagSong {
+		var normalizer = CoolUtil.normalizeName(input).toLowerCase();
+		var raw = Assets.getText(Paths.json(normalizer.toLowerCase(), folder)).trim();
+		while (!raw.endsWith("}"))
+			raw = raw.substr(0, raw.length - 1);
+
+		trace('loading: $folder/' + normalizer);
+		return parseJSONshit(raw);
+	}
+
+	public static function parseJSONshit(raw:String):SwagSong {
+		var swagShit:SwagSong = cast Json.parse(raw).song;
 		swagShit.validScore = true;
 		return swagShit;
 	}
