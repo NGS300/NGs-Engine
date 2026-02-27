@@ -11,6 +11,14 @@ var trainSprite;
 var trainSfx;
 var lights;
 
+var colors = [
+	0xFFFD4531,
+	0xFFFB33F5,
+	0xFFFB33F5,
+	0xFF31A2FD,
+	0xFF31A2FD,
+];
+
 function onCreate() {
     distractions = Settings.data.distractions;
     cam.zoom = 1.05;
