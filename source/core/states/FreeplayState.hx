@@ -6,16 +6,20 @@ class FreeplayState extends BeatState {
     var grpSongs:FlxTypedGroup<Item>;
     var songs:Array<Data>;
 
+    static var curSelected:Int = 0;
 	var diffNames:Array<String>;
 	var curDifficulty:Int = 0;
-    var curSelected:Int = 0;
 	var songInfo = new Info();
     var metaScript:HScript;
 
-    var scoreText:FlxText;
-    var diffText:FlxText;
-    var lerpScore:Int = 0;
+    var idleOscillating:Bool = false;
+    var idleDelay:Float = 2.7;
+    var idleTimer:Float = 0;
+    var intendedColor:Int;
+    var bg:BGSprite;
+
     var intendedScore:Int = 0;
+    //var lerpScore:Int = 0;
 
     override function create() {
         transOut = FlxTransitionableState.defaultTransOut;
@@ -27,12 +31,9 @@ class FreeplayState extends BeatState {
         script.call('onCreate');
         songs = lists.songs;
 
-        var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menus/freeplay/desat'));
+        bg = new BGSprite(0, 0, 'menus/freeplay/desat');
+        bg.screenCenter();
         add(bg);
-        FlxTween.color(bg, 2, 0xFF2A0F4D, 0xFF3A1C71, {
-            ease: FlxEase.quadInOut,
-            type: PINGPONG,
-        });
 
         grpSongs = new FlxTypedGroup<Item>();
         add(grpSongs);
@@ -44,18 +45,9 @@ class FreeplayState extends BeatState {
             grpSongs.add(item);
         }
 
-        scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
-        scoreText.setFormat(Paths.font("vcr"), 32, FlxColor.WHITE, RIGHT);
-
-        var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 66, 0xFF000000);
-        scoreBG.alpha = 0.6;
-        add(scoreBG);
-
-        diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
-        diffText.font = scoreText.font;
-        add(diffText);
-
-        add(scoreText);
+        if (curSelected >= songs.length) curSelected = 0;
+		bg.color = songs[curSelected].color;
+		intendedColor = bg.color;
 
         changeSelection();
         changeDiff();
@@ -66,11 +58,12 @@ class FreeplayState extends BeatState {
         super.update(elapsed);
         if (FlxG.sound.music.volume < 0.7)
             FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-
-        lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
-        if (Math.abs(lerpScore - intendedScore) <= 10)
-            lerpScore = intendedScore;
-        scoreText.text = "PERSONAL BEST:" + lerpScore;
+        
+        if (songs.length > 0) {
+            idleTimer += elapsed;
+            if (!idleOscillating && idleTimer >= idleDelay)
+                startOscillation();
+        }
 
         if (controls.ACCEPT && songInfo.name != null && songInfo.name.length > 0) {
             var input = CoolUtil.normalizeName(songs[curSelected].song).toLowerCase();
@@ -124,14 +117,38 @@ class FreeplayState extends BeatState {
         intendedScore = Highscore.getScore(songInfo.name, diffNames[curDifficulty]);
         #end
 
-        diffText.text = diffNames[curDifficulty].toUpperCase();
+        var selectedItem:Item = cast grpSongs.members[curSelected]; 
+        if (selectedItem != null) {
+            selectedItem.diffText.alpha = 1;
+            selectedItem.diffText.text = '<' + diffNames[curDifficulty].toUpperCase() + '>';
+        }
+
+        for (i in 0...grpSongs.members.length) {
+            if (i == curSelected) continue;
+            var item:Item = cast grpSongs.members[i];
+            if (item != null)
+                item.diffText.alpha = 0;
+        }
     }
 
     function changeSelection(change:Int = 0) {
 		if (songs.length <= 0) return;
         FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-
         curSelected = FlxMath.wrap(curSelected + change, 0, songs.length - 1);
+        var newColor:Int = songs[curSelected].color;
+
+        idleTimer = 0;
+        idleOscillating = false;
+        if (colorTween != null) {
+            colorTween.cancel();
+            colorTween = null;
+        }
+        
+        if (newColor != intendedColor) {
+            intendedColor = newColor;
+            FlxTween.cancelTweensOf(bg);
+            FlxTween.color(bg, 1, bg.color, intendedColor);
+        }
         loadSongMeta();
 
         #if !switch
@@ -145,11 +162,31 @@ class FreeplayState extends BeatState {
             item.targetY = bullShit - curSelected;
             bullShit++;
 
-            item.setAlpha(0.4);
+            item.setAlpha(0.6);
             if (item.targetY == 0)
                 item.setAlpha(1);
         }
         changeDiff();
+    }
+    var colorTween:FlxTween;
+
+    function startOscillation():Void {
+        idleOscillating = true;
+
+        var base:FlxColor = intendedColor;
+        var lighter:FlxColor = FlxColor.fromRGB(
+            Std.int(Math.min(base.red + 20, 255)),
+            Std.int(Math.min(base.green + 20, 255)),
+            Std.int(Math.min(base.blue + 20, 255))
+        );
+
+        if (colorTween != null)
+            colorTween.cancel();
+
+        colorTween = FlxTween.color(bg, 2, intendedColor, lighter, {
+            ease: FlxEase.quadInOut,
+            type: PINGPONG
+        });
     }
 
     function prepareMetaScript():Bool {

@@ -19,7 +19,7 @@ class LoadingState extends BeatState {
 		callbacks = new MultiCallback(onLoad);
 		final introDone = callbacks.add("intro");
 
-		final song = PlayState.SONG.song;
+		final song = PlayState.song.name;
 		checkSong(Paths.inst(song), song);
 		if (PlayState.SONG.needsVoices)
 			checkSong(Paths.voices(song), song + "_voices");
@@ -43,7 +43,7 @@ class LoadingState extends BeatState {
 
 	inline static public function loadAndSwitchState(target:Class<FlxState>, stopMusic:Bool = false):Void {
 		FlxG.switchState(() -> {
-			final song = PlayState.SONG.song;
+			final song = PlayState.song.name;
 
 			final inst = Paths.inst(song);
 			final voices = PlayState.SONG.needsVoices ? Paths.voices(song) : null;

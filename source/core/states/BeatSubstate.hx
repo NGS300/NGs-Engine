@@ -6,12 +6,10 @@ class BeatSubstate extends flixel.FlxSubState {
 	public function new()
 		super();
 
-	private var lastBeat:Float = 0;
-	private var lastStep:Float = 0;
+	var curStep:Int = 0;
+	var curBeat:Int = 0;
 
-	private var curStep:Int = 0;
-	private var curBeat:Int = 0;
-	private var controls(get, never):Controls;
+	var controls(get, never):Controls;
 	inline function get_controls()
 		return Controls.instance;
 
@@ -26,12 +24,13 @@ class BeatSubstate extends flixel.FlxSubState {
 		super.update(elapsed);
 	}
 
-	private function updateCurStep():Void {
+	function updateCurStep():Void {
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
 			songTime: 0,
 			bpm: 0
 		}
+
 		for (i in 0...Conductor.bpmChangeMap.length) {
 			if (Conductor.songPosition > Conductor.bpmChangeMap[i].songTime)
 				lastChange = Conductor.bpmChangeMap[i];

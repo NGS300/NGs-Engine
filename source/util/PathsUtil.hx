@@ -186,11 +186,15 @@ class PathsUtil {
 	public static function music(key:String, ?folder:String, canPrint = true):Sound
 		return cacheSound('music/$key', folder, canPrint);
 
-	inline static public function inst(song:String, canPrint = true):Sound
-		return cacheSound(CoolUtil.normalizeName(song) + '/Inst', 'songs', true);
+	inline static public function inst(song:String, ?postfix:String, canPrint = true):Sound {
+		var songKey = CoolUtil.normalizeName(song.toLowerCase()) + '/Inst';
+		if (postfix != null)
+			songKey += '-' + postfix;
+		return cacheSound(songKey, 'songs', true);
+	}
 
 	inline static public function voices(song:String, ?postfix:String, canPrint = true):Sound {
-		var songKey = CoolUtil.normalizeName(song) + '/Voices';
+		var songKey = CoolUtil.normalizeName(song.toLowerCase()) + '/Voices';
 		if (postfix != null)
 			songKey += '-' + postfix;
 		return cacheSound(songKey, 'songs', true);

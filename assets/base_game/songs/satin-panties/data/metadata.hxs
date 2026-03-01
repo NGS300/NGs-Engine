@@ -1,7 +1,0 @@
-function onCreateMeta() {
-    difficulties = ["normal", "hard"];
-}
-
-function onUpdateMeta() {
-    
-}

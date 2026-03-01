@@ -13,15 +13,17 @@ class Info {
     }
 }
 
-
 class Data {
 	public var week:Int;
 	public var song:String;
 	public var character:String;
-	public function new(?week:Int, ?name:String, ?character:String) {
+    public var color:Int;
+
+	public function new(?week:Int, ?name:String, ?character:String, ?color:Int) {
 		this.song = name ?? "";
 		this.week = week ?? 0;
-		this.character = character ?? "";
+		this.character = character ?? "face";
+        this.color = color ?? FlxColor.fromRGB(17, 17, 17);
 	}
 }
 
@@ -31,31 +33,62 @@ class List {
 
 	public function new() {}
 
-	public function add(name:Dynamic, ?characters:Dynamic, ?forceWeek:Int):Void {
-		var songList:Array<String> =
-			Std.isOfType(name, String) ? [cast name] : cast name;
+    public function add(name:Dynamic, ?characters:Dynamic, ?colors:Dynamic, ?forceWeek:Int):Void {
+        var songList:Array<String> =
+            Std.isOfType(name, String) ? [cast name] : cast name;
 
-		var charList:Array<String> =
-			characters == null ? ['face'] :
-			Std.isOfType(characters, String) ? [cast characters] :
-			cast characters;
+        var charList:Array<String>;
+        if (characters == null)
+            charList = ["face"];
+        else if (Std.isOfType(characters, String))
+            charList = [cast characters];
+        else
+            charList = cast characters;
 
-		var week:Int = forceWeek != null ? forceWeek : autoWeek;
+        if (charList == null || charList.length == 0)
+            charList = ["face"];
 
-		var charIndex:Int = 0;
-		for (song in songList) {
-            var character = charList[charIndex];
-			songs.push(new Data(week, song, character));
 
-			if (charList.length > 1)
-				charIndex++;
-		}
-		if (forceWeek == null)
-			autoWeek++;
-	}
+        var colorList:Array<FlxColor> = [];
+        if (colors == null)
+            colorList = [FlxColor.fromRGB(17, 17, 17)];
+        else {
+            var raw:Array<Dynamic> = cast colors;
+
+            if (raw.length == 3 && !Std.isOfType(raw[0], Array)) { // only 1 [r,g,b]
+                colorList = [
+                    FlxColor.fromRGB(raw[0], raw[1], raw[2])
+                ];
+            } else {
+                for (c in raw) { // more 1 [[r,g,b], [r,g,b]]
+                    var rgb:Array<Dynamic> = cast c;
+                    colorList.push(
+                        FlxColor.fromRGB(rgb[0], rgb[1], rgb[2])
+                    );
+                }
+            }
+        }
+
+        var week:Int = forceWeek != null ? forceWeek : autoWeek;
+        for (i in 0...songList.length) {
+            var charIndex = i < charList.length ? i : charList.length - 1;
+            var colorIndex = i < colorList.length ? i : colorList.length - 1;
+
+            songs.push(new Data(
+                week,
+                songList[i],
+                charList[charIndex],
+                colorList[colorIndex]
+            ));
+        }
+
+        if (forceWeek == null)
+            autoWeek++;
+    }
 }
 
 class Item extends FlxSpriteGroup {
+    public var diffText:HUDText;
     public var targetY:Int = 0;
     var firstFrame:Bool = true;
     var boxHeight:Float = 180;
@@ -64,42 +97,45 @@ class Item extends FlxSpriteGroup {
     public function new(data:Dynamic) {
         super();
 
-        // Center X of the box relative to group
         var boxX:Float = -boxWidth / 2;
         var boxY:Float = -boxHeight / 2;
-
-        // Main white cube background
-        var bg = new FlxSprite(boxX, boxY);
-        bg.makeGraphic(Std.int(boxWidth), Std.int(boxHeight), FlxColor.WHITE);
+        
+        var bg = new BGGraphic(boxX, boxY, boxWidth, boxHeight);
         add(bg);
 
-        // Black square centered inside cube
         var blackSize:Int = 90;
-        var iconBG = new FlxSprite(-blackSize / 2, -blackSize / 2);
-        iconBG.makeGraphic(blackSize, blackSize, 0xAA000000);
+        var blackPos:Float = -blackSize / 2;
+        var iconBG = new BGGraphic(blackPos, blackPos, blackSize, blackSize, 0xAA000000);
         add(iconBG);
 
-        // Icon centered inside black square
         var icon = new HealthIcon(data.character);
-        icon.screenCenter(XY);
+        icon.screenCenter();
         icon.x = -icon.width / 2;
         icon.y = -icon.height / 2;
         add(icon);
 
-        // Song name - top center of cube
-        var songName = new FlxText(boxX, boxY + 10, boxWidth, data.song, 22);
-        songName.setFormat(null, 22, FlxColor.BLACK, CENTER);
+        var color = FlxColor.BLACK;
+        var songName = new HUDText(boxX, boxY + 6, 'montserrat/bold', data.song, 24, boxWidth);
+        songName.minusSize = 4;
+        songName.format('center', color);
         add(songName);
 
-        // Week - bottom left
-        var weekText = new FlxText(boxX + 15, boxY + boxHeight - 30, 200, "Week " + data.week, 16);
-        weekText.setFormat(null, 16, FlxColor.BLACK, LEFT);
-        add(weekText);
-
-        // Difficulty - bottom right
-        var diffText = new FlxText(boxX, boxY + boxHeight - 30, boxWidth - 15, "????", 16);
-        diffText.setFormat(null, 16, FlxColor.BLACK, RIGHT);
+        var textY = boxY + boxHeight - 26;
+        var textFont = 'nexa/heavy';
+        diffText = new HUDText(boxX + 6, textY, textFont, "", 18, 200);
+        diffText.minusSize = 2;
+        diffText.format('left', color);
         add(diffText);
+
+        var bpmText = new HUDText(boxX, textY, textFont, "BPM 0", 18, boxWidth);
+        bpmText.minusSize = 2;
+        bpmText.format('center', color);
+        add(bpmText);
+
+        var weekText = new HUDText(boxX, textY, textFont, "WEEK " + data.week, 18, boxWidth - 15);
+        weekText.minusSize = 2;
+        weekText.format('right', color);
+        add(weekText);
     }
 
     override public function update(elapsed:Float) {

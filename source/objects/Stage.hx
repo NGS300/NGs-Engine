@@ -1,9 +1,5 @@
 package objects;
 
-import core.HScript;
-import flixel.FlxBasic;
-import openfl.utils.Assets as OpenFlAssets;
-
 enum Countdown {
 	THREE;
 	TWO;
@@ -12,7 +8,7 @@ enum Countdown {
 	START;
 }
 
-class Stage extends FlxBasic {
+class Stage extends flixel.FlxBasic {
     public var dad:Character;
 	public var gf:Character;
     public var bf:Character;
@@ -92,7 +88,7 @@ class Stage extends FlxBasic {
         script.call("onAddBehind", [of]);
     }
 
-    public function updates(elapsed:Float) {
+    override function update(elapsed:Float) {
         script.call("onUpdate", [elapsed]);
     }
 

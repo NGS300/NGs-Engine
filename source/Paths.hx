@@ -39,7 +39,7 @@ class Paths {
 	public static function music(key:String, ?folder:String, print = true):Sound
 		return PathsUtil.music(key, folder, print);
 
-	public static function inst(key:String, print = true):Sound
+	public static function inst(key:String, ?postfix:String, print = true):Sound
 		return PathsUtil.inst(key, print);
 
 	public static function voices(key:String, ?postfix:String, print = true):Sound

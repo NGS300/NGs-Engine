@@ -2,6 +2,7 @@ package objects;
 
 class BGAnim extends FlxSprite {
 	var idleAnim:String;
+
 	public function new(?x:Float, ?y:Float, image:String, ?folder:String, ?animArray:Array<String>, ?loop:Bool, ?scrollX:Float, ?scrollY:Float) {
 		super(x ?? 0, y ?? 0);
 		if (animArray != null && animArray.length > 0) {
@@ -17,12 +18,11 @@ class BGAnim extends FlxSprite {
 			active = true;
 		}
 		scrollFactor.set(scrollX ?? 1, scrollY ?? 1);
-		antialiasing = (Settings.data.antialiasing);
+		antialiasing = Settings.data.antialiasing;
 	}
 
-	public function play(name:String, ?force:Bool) {
+	public function play(name:String, ?force:Bool)
 		animation.play(name, force ?? false);
-	}
 
 	public function dance(?force:Bool) {
 		if (idleAnim != null)

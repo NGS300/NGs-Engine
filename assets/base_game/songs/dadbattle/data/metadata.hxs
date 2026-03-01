@@ -1,5 +1,6 @@
 function onCreateMeta() {
     difficulties = ["normal", "hard"];
+    song.name = 'DadBattle';
 }
 
 function onUpdateMeta() {

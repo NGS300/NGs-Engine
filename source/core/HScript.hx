@@ -94,8 +94,10 @@ class HScript {
 			set("FlxTimer", FlxTimer);
 			if (canObjects) {
 				set("Character", Character);
-				set("BGSprite", objects.BGSprite);
-				set("BGAnim", objects.BGAnim);
+				set('HUDText', HUDText);
+				set("BGAnim", BGAnim);
+				set("BGSprite", BGSprite);
+				set('BGGraphic', BGGraphic);
 				set("FlxGroup", FlxGroup);
 				set("FlxSprite", FlxSprite);
 				set("BlendMode", {
@@ -141,6 +143,7 @@ class HScript {
 			trace("File: " + path);
 			trace("Line: " + e.line);
 			trace("Message: " + e.e);
+			trace("Origin: " + e.origin);
 			return;
 		} catch (e:Dynamic) { // Runtime error during script execution
 			trace("[HScript EXECUTION ERROR]");
@@ -175,7 +178,7 @@ class HScript {
 			var f = interp.variables.get(func);
 			return Reflect.callMethod(null, f, args == null ? [] : args);
 		} catch (e:hscript.Expr.Error) { // Runtime error inside script function
-			trace("[HScript RUNTIME ERROR]");
+			trace("[HScript INSIDE RUNTIME ERROR]");
 			trace("File: " + path);
 			trace("Function: " + func);
 			trace("Line: " + e.line);

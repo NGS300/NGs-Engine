@@ -14,13 +14,12 @@ var colors = [
 ];
 
 function onCreate() {
+    cam.zoom = 0.86;
+
     var bg = new BGSprite(-600, -200, 'back', 'week1', 0.9, 0.9);
 	add(bg);
 
-	cam.zoom = 0.85;
-
-	if (Settings.data.effects)
-	{
+	if (Settings.data.effects) {
 		var stageFront = new BGSprite(-650, 600, 'front', 'week1', 0.9, 0.9);
 		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
 		stageFront.updateHitbox();
@@ -76,16 +75,12 @@ function onCreate() {
 	stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
 	stageCurtains.updateHitbox();
 	add(stageCurtains);
-
-	trace("hey");
 }
 
 function onUpdate(elapsed) {
-	if (Settings.data.effects)
-	{
+	if (Settings.data.effects) {
 		holoLeft.angle = holoSpriteLeft.angle;
 		holoRight.angle = holoSpriteRight.angle;
-
 		holoLeft.alpha -= 0.75 * elapsed;
 		holoRight.alpha -= 0.75 * elapsed;
 	}
@@ -93,36 +88,22 @@ function onUpdate(elapsed) {
 
 
 function flashHolo() {
-	if (alreadyFlashed)
-	{
+	if (alreadyFlashed) {
 		holoRight.alpha = 1;
 		holoRight.color = colors[randomInt(0, colors.length - 1)];
-	}
-	else
-	{
+	} else {
 		holoLeft.alpha = 1;
 		holoLeft.color = colors[randomInt(0, colors.length - 1)];
 	}
 	alreadyFlashed = !alreadyFlashed;
 }
 
-function hey() {
-	trace("hey");
-}
-
 function onBeat() {
-	// Where it starts || where it ends
-	if (Settings.data.effects)
-	{
-		if(curBeat > 5 && curBeat < 130)
-		{
-			if(curBeat % 8 == 7)
-			{
-				//trace("hey");
+	if (Settings.data.effects) {
+		if (curBeat > 5 && curBeat < 130) {
+			if (curBeat % 8 == 7)
 				flashHolo();
-			}
 		}
-
 		if (curBeat % 2)
 			flashHolo();
 	}

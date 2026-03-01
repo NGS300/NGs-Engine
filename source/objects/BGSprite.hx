@@ -7,6 +7,6 @@ class BGSprite extends FlxSprite {
 			loadGraphic(Paths.image(image, folder));
 		active = false;
 		scrollFactor.set(scrollX ?? 1, scrollY ?? 1);
-		antialiasing = (Settings.data.antialiasing);
+		antialiasing = Settings.data.antialiasing;
 	}
 }

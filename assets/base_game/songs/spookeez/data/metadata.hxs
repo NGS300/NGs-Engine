@@ -3,5 +3,5 @@ function onCreateMeta() {
 }
 
 function onUpdateMeta() {
-    
+    stage = 'spooky';
 }

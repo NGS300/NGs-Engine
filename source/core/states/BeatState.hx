@@ -21,10 +21,7 @@ class BeatState extends FlxTransitionableState {
 		super.create();
 	}
 
-	override function update(elapsed:Float) {
-		if (PlayState.stage != null)
-			PlayState.stage.updates(elapsed);
-		
+	override function update(elapsed:Float) {		
 		var oldStep = curStep;
 		updateCurStep();
 		updateBeat();

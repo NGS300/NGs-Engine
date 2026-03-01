@@ -38,25 +38,6 @@ class Song {
 		this.bpm = bpm;
 	}
 
-	public static var loadedSongName:String;
-	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong {
-		trace(jsonInput);
-		
-		loadedSongName = folder;
-		var folderLowercase = StringTools.replace(folder, " ", "-").toLowerCase();
-		switch (folderLowercase) {
-			case 'dad-battle': folderLowercase = 'dadbattle';
-			case 'philly-nice': folderLowercase = 'philly';
-		}
-		trace('loading ' + folderLowercase + '/' + jsonInput.toLowerCase());
-
-		var rawJson = Assets.getText(Paths.json(folderLowercase + '/' + jsonInput.toLowerCase())).trim();
-		while (!rawJson.endsWith("}"))
-			rawJson = rawJson.substr(0, rawJson.length - 1);
-
-		return parseJSONshit(rawJson);
-	}
-
 	public static function load(input:String, ?folder:String):SwagSong {
 		var normalizer = CoolUtil.normalizeName(input).toLowerCase();
 		var raw = Assets.getText(Paths.json(normalizer.toLowerCase(), folder)).trim();
