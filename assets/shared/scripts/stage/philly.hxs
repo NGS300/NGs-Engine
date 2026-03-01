@@ -6,17 +6,19 @@ var trainFrameTimer = 0.0;
 var trainIsMoving = false;
 var curLight = 0;
 
+var lightBuild;
+var lightBuildGlow;
 var distractions;
 var trainSprite;
 var trainSfx;
 var lights;
 
 var colors = [
-	0xFFFD4531,
-	0xFFFB33F5,
-	0xFFFB33F5,
-	0xFF31A2FD,
-	0xFF31A2FD,
+	0xFD4531,
+	0xFB33F5,
+	0x31FD8C,
+	0xFBA633,
+	0x31A2FD,
 ];
 
 function onCreate() {
@@ -31,17 +33,38 @@ function onCreate() {
 	city.updateHitbox();
 	add(city);
 
-    lights = new FlxGroup();
-    if (distractions)
-        add(lights);
+    //lights = new FlxGroup();
+    //if (distractions)
+    //    add(lights);
 
-    for (i in 0...5) {
+    /*for (i in 0...5) {
         var glow = new BGSprite(city.x, 0, 'glow' + i, 'week3', 0.3, 0.3);
         glow.visible = false;
         glow.setGraphicSize(Std.int(glow.width * 0.85));
         glow.updateHitbox();
         lights.add(glow);
-    }
+    }*/
+
+	lightBuild = new BGSprite(city.x, 0, 'light_building', 'week3', 0.3, 0.3);
+	lightBuild.alpha = 0;
+    lightBuild.setGraphicSize(Std.int(lightBuild.width * 0.85));
+    lightBuild.updateHitbox();
+	lightBuild.visible = true;
+
+	add(lightBuild);
+
+	if (Settings.data.effects)
+	{
+		lightBuildGlow = new BGSprite(city.x, 0, 'light_building_glow', 'week3', 0.3, 0.3);
+		lightBuildGlow.alpha = 0;
+		lightBuildGlow.blend = BlendMode.ADD;
+		lightBuildGlow.setGraphicSize(Std.int(lightBuildGlow.width * 0.85));
+		lightBuildGlow.updateHitbox();
+
+		lightBuildGlow.visible = true;
+
+		add(lightBuildGlow);
+	}
 
     var portico = new BGSprite(-40, 50, 'portico', 'week3');
 	add(portico);
@@ -103,6 +126,13 @@ function onUpdate(elapsed) {
 			trainFrameTimer = 0;
 		}
 	}
+
+	if (lightBuild.alpha > 0 || lightBuildGlow.alpha > 0)
+	{
+		lightBuild.alpha -= (Conductor.crochet / 1000) * 2 * FlxG.elapsed;
+		if (Settings.data.effects)
+			lightBuildGlow.alpha -= (Conductor.crochet / 1000) * 2 * FlxG.elapsed;
+	}
 }
 
 function onBeat() {
@@ -111,11 +141,24 @@ function onBeat() {
             trainSpawnCooldown += 1;
         
         if (curBeat % 4 == 0) {
-            lights.forEach(function(spr) {
-                spr.visible = false;
-            });
-            curLight = FlxG.random.int(0, lights.members.length - 1);
-            lights.members[curLight].visible = true;
+            //lights.forEach(function(spr) {
+            //    spr.visible = false;
+            //});
+            //curLight = FlxG.random.int(0, lights.members.length - 1);
+            //lights.members[curLight].visible = true;
+
+			trace("sex");
+
+			var activeLight = FlxG.random.int(0, colors.length - 1);
+			var activeColor = colors[activeLight];
+			lightBuild.color = activeColor;
+			lightBuild.alpha = 1;
+
+			if (Settings.data.effects)
+			{
+				lightBuildGlow.color = activeColor;
+				lightBuildGlow.alpha = 1;
+			}
         }
 
         if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainIsMoving && trainSpawnCooldown > 8) {
