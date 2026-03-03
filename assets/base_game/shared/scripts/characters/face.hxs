@@ -1,0 +1,20 @@
+function onCharacter() {
+    loadAtlas("face");
+
+    animPrefix("idle", "idle");
+	animPrefix("singUP", "up");
+    animPrefix("singDOWN", "down");
+    animPrefix("singLEFT", "left");
+	animPrefix("singRIGHT", "right");
+
+	setOffset("idle", -30, 50);
+	setOffset("singUP", -32, 120);
+    setOffset("singDOWN", -25, -33);
+    setOffset("singLEFT", -21, 105);
+	setOffset("singRIGHT", -32, 110);
+
+    play("idle");
+
+    pos.set[1] = 300;
+    pos.cam = [160, -20];
+}

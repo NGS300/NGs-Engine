@@ -1,6 +1,6 @@
 package core.states;
 
-class TitleState extends BeatState {
+class TitleState extends MusicBeatState {
 	var textGroup = new flixel.group.FlxGroup();
 	var curShit:Array<String> = [];
 	var blackScreen:FlxSprite;

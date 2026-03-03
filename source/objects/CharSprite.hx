@@ -1,24 +1,51 @@
 package objects;
 
+import sys.FileSystem;
+
 class CharSprite extends FlxSprite {
     public var offsets:Map<String, Array<Dynamic>>;
-    public var specialAnim:Bool = false;
-    public var skipDance:Bool = false;
     public var isPlayer:Bool = false;
     public var curCharacter:String;
-    public var suffix:String = '';
+
+    public var specialAnim:Bool = false;
+    public var idleSuffix:String = '';
+    public var singDanced:Bool = false;
     var danceIdle:Bool = false;
     var danced:Bool = false;
+    public var skipDance:Bool = false;
 
     public var singDuration:Float = 4;
-	public var holdTimer:Float = 0;
+	public var holdTimer:Float = 0; 
 
     public var debugMode:Bool = false;
     var _lastAnim:String;
+
     public function new(x:Float, y:Float, ?char:String, ?isPlayer:Bool) {
         super(x, y);
         offsets = new Map<String, Array<Dynamic>>();
         this.isPlayer = isPlayer ?? false;
+    }
+
+    public function loadAtlas(file:String, ?folder:String) {
+        var imagePath = 'images/$file.png';
+        var useFolder = folder;
+
+        if (FileSystem.exists(Paths.getPath(imagePath, Paths.currentLevel)))
+            useFolder = null;
+        else if (folder == null || folder == "")
+            file = 'characters/$file';
+
+        frames = Paths.atlas(file, useFolder);
+    }
+
+    public function newPrefix(name:String, prefix:String, ?frame:Float, ?loop:Bool, ?flipX:Bool, ?flipY:Bool) {
+        animation.addByPrefix(name, prefix, frame ?? 24, loop ?? false, flipX ?? false, flipY ?? false);
+        newOffset(name);
+    }
+
+    public function newIndices(name:String, prefix:String, indices:Array<Int>, ?frame:Float, ?loop:Bool, ?flipX:Bool, ?flipY:Bool) {
+        animation.addByIndices(name, prefix, indices, "", frame ?? 24, loop ?? false, flipX ?? false, flipY ?? false);
+        newOffset(name);
     }
 
     public function playAnim(name:String, ?force:Bool, ?reversed:Bool, ?frame:Int):Void {
@@ -30,7 +57,7 @@ class CharSprite extends FlxSprite {
 			offset.set(id[0], id[1]);
         }
 
-        if (curCharacter.startsWith('gf-') || curCharacter == 'gf') {
+        if (singDanced) {
             if (name.startsWith('sing')) {
                 switch (name.substr(4)) {
                     case 'LEFT':  danced = true;
@@ -42,46 +69,29 @@ class CharSprite extends FlxSprite {
 	}
 
     override function update(elapsed:Float) {
-
-        /*if (specialAnim && isFinished()) {
+        if (specialAnim && isFinished()) {
 			specialAnim = false;
 			dance();
 		} else if (getAnim().endsWith('miss') && isFinished()) {
 			dance();
-			finishAnimation();
-		}*/
+			finishAnim();
+		}
 
         if (getAnim().startsWith('sing'))
 			holdTimer += elapsed;
 		else if (isPlayer)
 			holdTimer = 0;
 
-        if (getAnim().endsWith('miss') && isFinished() && !debugMode)
-			playAnim('idle', true, false, 10);
-
-        if (isPlayer) {
-		    if (getAnim() == 'firstDeath' && isFinished())
-			    playAnim('deathLoop');
-        } else if (!isPlayer) {
-            if (holdTimer >= Conductor.stepCrochet * 0.0011 * singDuration) {
-                dance();
-                holdTimer = 0;
-            }
+        if (!isPlayer && holdTimer >= Conductor.stepCrochet * 0.0011 * singDuration) {
+            dance();
+            holdTimer = 0;
         }
+
+        var name:String = getAnim();
+		if (isFinished() && hasAnim('$name-loop'))
+			playAnim('$name-loop');
+
         super.update(elapsed);
-    }
-
-    public function loadAtlas(file:String, ?folder:String)
-        frames = Paths.atlas('characters/$file');
-
-    public function newPrefix(name:String, prefix:String, ?frame:Float, ?loop:Bool, ?flipX:Bool, ?flipY:Bool) {
-        animation.addByPrefix(name, prefix, frame ?? 24, loop ?? false, flipX ?? false, flipY ?? false);
-        newOffset(name);
-    }
-
-    public function newIndices(name:String, prefix:String, indices:Array<Int>, ?frame:Float, ?loop:Bool, ?flipX:Bool, ?flipY:Bool) {
-        animation.addByIndices(name, prefix, indices, "", frame ?? 24, loop ?? false, flipX ?? false, flipY ?? false);
-        newOffset(name);
     }
 
     inline public function isNull():Bool
@@ -98,7 +108,7 @@ class CharSprite extends FlxSprite {
 		return animation.curAnim.finished; //!isAnimateAtlas ? animation.curAnim.finished : atlas.anim.finished;
     }
 
-    public function finishAnimation():Void {
+    public function finishAnim():Void {
 		if (isNull()) return;
 		animation.curAnim.finish(); //if(!isAnimateAtlas) animation.curAnim.finish(); else atlas.anim.curFrame = atlas.anim.length - 1;
 	}
@@ -106,47 +116,24 @@ class CharSprite extends FlxSprite {
     public function newOffset(name:String, ?x:Float, ?y:Float)
 	    offsets[name] = [x ?? 0, y ?? 0];
 
-    /*public function dance() {
-        if (!debugMode && !skipDance && !specialAnim) {
-            if (danceIdle) {
-                danced = !danced;
-                playAnim('dance' + (danced ? 'Right' : 'Left'));
-            } else if (hasAnim('idle'))
-                playAnim('idle');
-        }
-    }*/
-
     public function dance() {
 		if (!debugMode && !skipDance && !specialAnim) {
 			if (danceIdle) {
 				danced = !danced;
 				if (danced)
-					playAnim('danceRight');
+					playAnim('danceRight' + idleSuffix);
 				else
-					playAnim('danceLeft');
-			} else if (hasAnim('idle'))
-				playAnim('idle');
+					playAnim('danceLeft' + idleSuffix);
+			} else if (hasAnim('idle' + idleSuffix))
+				playAnim('idle' + idleSuffix);
 		}
 	}
 
     public var danceEveryNumBeats = 2;
 	var settingCharacterUp = true;
-    /*public function recalcDance() {
-        var lastDanceIdle = danceIdle;
-        var base = 'dance';
-
-        danceIdle = hasAnim(base + 'Left' + suffix) && hasAnim(base + 'Right' + suffix);
-        if (settingCharacterUp)
-            danceEveryNumBeats = danceIdle ? 1 : 2;
-        else if (lastDanceIdle != danceIdle) {
-            var factor = danceIdle ? 0.5 : 2;
-            danceEveryNumBeats = Math.round(Math.max(danceEveryNumBeats * factor, 1));
-        }
-        settingCharacterUp = false;
-    }*/
     public function recalcDance() {
 		var lastDanceIdle:Bool = danceIdle;
-		danceIdle = (hasAnim('danceLeft') && hasAnim('danceRight'));
+		danceIdle = (hasAnim('danceLeft' + idleSuffix) && hasAnim('danceRight' + idleSuffix));
 
 		if (settingCharacterUp)
 			danceEveryNumBeats = (danceIdle ? 1 : 2);

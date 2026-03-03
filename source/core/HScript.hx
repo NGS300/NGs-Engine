@@ -93,6 +93,7 @@ class HScript {
 
 			set("FlxTimer", FlxTimer);
 			if (canObjects) {
+				set("FlxObject", FlxObject);
 				set("Character", Character);
 				set('HUDText', HUDText);
 				set("BGAnim", BGAnim);
@@ -270,6 +271,59 @@ class HScript {
 
 		var result:Array<Int> = [];
 		for (i in 0...max) {
+			var value:Int = 0;
+
+			if (i < arr.length && arr[i] != null) {
+				var parsed = Std.parseInt(Std.string(arr[i]));
+				if (parsed != null)
+					value = parsed;
+			}
+			result.push(value);
+		}
+
+		return result;
+	}
+
+	public function getFloatArray(name:String, ?limit:Int):Array<Float> {
+		var target:Dynamic = resolvePath(name);
+		var arr:Array<Dynamic> = cast target;
+		if (arr == null) arr = [];
+
+		var max:Int;
+		if (limit == null) max = 2;
+		else if (limit < 0) max = arr.length;
+		else if (limit < 1) max = 1;
+		else max = limit;
+
+		var result:Array<Float> = [];
+		for (i in 0...max) {
+			var value:Float = 0;
+
+			if (i < arr.length && arr[i] != null) {
+				var parsed = Std.parseFloat(Std.string(arr[i]));
+				if (!Math.isNaN(parsed))
+					value = parsed;
+			}
+
+			result.push(value);
+		}
+
+		return result;
+	}
+
+	/*public function getIntArray(name:String, ?limit:Int):Array<Int> {
+		var target:Dynamic = resolvePath(name);
+		var arr:Array<Dynamic> = cast target;
+		if (arr == null) arr = [];
+
+		var max:Int;
+		if (limit == null) max = 2;
+		else if (limit < 0) max = arr.length;
+		else if (limit < 1) max = 1;
+		else max = limit;
+
+		var result:Array<Int> = [];
+		for (i in 0...max) {
 			if (i < arr.length && arr[i] != null)
 				result.push(Std.parseInt(Std.string(arr[i])));
 			else
@@ -297,7 +351,7 @@ class HScript {
 				result.push(0);
 		}
 		return result;
-	}
+	}*/
 
 	public function getBoolArray(name:String, ?limit:Int):Array<Bool> {
 		var target:Dynamic = resolvePath(name);

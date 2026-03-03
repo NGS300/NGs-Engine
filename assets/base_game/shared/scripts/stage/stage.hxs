@@ -1,0 +1,113 @@
+var alreadyFlashed = false;
+var holoLeft;
+var holoRight;
+var holoSpriteLeft;
+var holoSpriteRight;
+
+var colors = [
+	0xFF00B922,
+	0xFFFFE132,
+	0xFFF5274E,
+	0xFF3641FF,
+	0xFF04CDFB,
+	0xFFFFFFFF,
+];
+
+function onCreate() {
+    dad.cam = [60];
+    bf.cam = [-100, -50];
+
+    cam.zoom = 0.8;
+    var bg = new BGSprite(-600, -200, "back", "", 0.9, 0.9);
+	add(bg);
+
+    var stageFront = new BGSprite(-650, 600, "front", "", 0.9, 0.9);
+	stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+	stageFront.updateHitbox();
+	add(stageFront);
+
+	if (Settings.data.effects) {	
+		var scaleSpriteX = 0.86;
+		var spriteY = 460;
+        var pos = 300;
+		
+		holoSpriteLeft = new BGSprite(pos, 0, "light", "", 0.9, 0.9);
+		holoSpriteLeft.angle = 0;
+		holoSpriteLeft.scale.set(0.5, 0.5);
+		holoSpriteLeft.screenCenter();
+		holoSpriteLeft.x -= 600;
+		holoSpriteLeft.y -= spriteY;
+
+		holoLeft = new BGSprite(pos, 0, "holo", "", 0.9, 0.9);
+		holoLeft.angle = 0;
+		holoLeft.scale.set(scaleSpriteX, 2.3);
+		holoLeft.origin.set(holoLeft.width, holoLeft.height / 2);
+		holoLeft.screenCenter();
+		holoLeft.x -= 1400;
+		holoLeft.y -= spriteY;
+		holoLeft.blend = BlendMode.ADD;
+		holoLeft.alpha = 0;
+		add(holoLeft);
+        add(holoSpriteLeft);
+
+        holoSpriteRight = new BGSprite(pos, 0, "light", "", 0.9, 0.9);
+		holoSpriteRight.angle = 0;
+		holoSpriteRight.scale.set(0.5, 0.5);
+		holoSpriteRight.screenCenter();
+		holoSpriteRight.x -= -FlxG.width / 2 - 100;
+		holoSpriteRight.y -= spriteY;
+
+		holoRight = new BGSprite(pos, 0, "holo", "", 0.9, 0.9);
+		holoRight.angle = 0;
+		holoRight.scale.set(scaleSpriteX, 2.3);
+		holoRight.origin.set(holoRight.width, holoRight.height / 2);
+		holoRight.screenCenter();
+		holoRight.x -= FlxG.width / 2 - 550;
+		holoRight.y -= spriteY;
+		holoRight.blend = BlendMode.ADD;
+		holoRight.alpha = 0;
+		add(holoRight);
+		add(holoSpriteRight);
+
+		FlxTween.angle(holoSpriteLeft, -135, -97, 2.6, { ease: FlxEase.sineInOut, type: FlxTweenType.PINGPONG });
+		FlxTween.angle(holoSpriteRight, -45, -97, 2.6, { ease: FlxEase.sineInOut, type: FlxTweenType.PINGPONG });
+	}
+
+	var stageCurtains = new BGSprite(-500, -300, "curtains", "", 1.3, 1.3);
+	stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+	stageCurtains.updateHitbox();
+	add(stageCurtains);
+}
+
+function flashHolo() {
+    alreadyFlashed = !alreadyFlashed;
+	if (alreadyFlashed) {
+		holoRight.alpha = 1;
+		holoRight.color = colors[randomInt(0, colors.length - 1)];
+	} else {
+		holoLeft.alpha = 1;
+		holoLeft.color = colors[randomInt(0, colors.length - 1)];
+	}
+}
+
+function onUpdate(elapsed) {
+	if (Settings.data.effects) {
+		holoLeft.angle = holoSpriteLeft.angle;
+		holoRight.angle = holoSpriteRight.angle;
+
+		holoLeft.alpha -= 0.75 * elapsed;
+		holoRight.alpha -= 0.75 * elapsed;
+	}
+}
+
+function onBeat() {
+	if (Settings.data.effects) {
+		if (curBeat > 5 && curBeat < 130) {
+			if (curBeat % 8 == 7)
+				flashHolo();
+		}
+
+		if (curBeat % 2)
+			flashHolo();
+	}
+}

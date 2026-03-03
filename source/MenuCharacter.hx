@@ -1,17 +1,11 @@
 package;
 
-import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
-
-class CharacterSetting
-{
+class CharacterSetting {
 	public var x(default, null):Int;
 	public var y(default, null):Int;
 	public var scale(default, null):Float;
 	public var flipped(default, null):Bool;
-
-	public function new(x:Int = 0, y:Int = 0, scale:Float = 1.0, flipped:Bool = false)
-	{
+	public function new(x:Int = 0, y:Int = 0, scale:Float = 1.0, flipped:Bool = false) {
 		this.x = x;
 		this.y = y;
 		this.scale = scale;
@@ -19,9 +13,8 @@ class CharacterSetting
 	}
 }
 
-class MenuCharacter extends FlxSprite
-{
-	private static var settings:Map<String, CharacterSetting> = [
+class MenuCharacter extends FlxSprite {
+	static var settings:Map<String, CharacterSetting> = [
 		'bf' => new CharacterSetting(0, -20, 1.0, true),
 		'gf' => new CharacterSetting(50, 80, 1.5, true),
 		'dad' => new CharacterSetting(-15, 130),
@@ -32,16 +25,14 @@ class MenuCharacter extends FlxSprite
 		'senpai' => new CharacterSetting(-40, -45, 1.4)
 	];
 
-	private var flipped:Bool = false;
+	var flipped:Bool = false;
 
-	public function new(x:Int, y:Int, scale:Float, flipped:Bool)
-	{
+	public function new(x:Int, y:Int, scale:Float, flipped:Bool) {
 		super(x, y);
 		this.flipped = flipped;
-
 		antialiasing = true;
 
-		frames = Paths.atlas('campaign_menu_UI_characters');
+		frames = Paths.atlas('menus/storymode/campaign_menu_UI_characters');
 
 		animation.addByPrefix('bf', "BF idle dance white", 24);
 		animation.addByPrefix('bfConfirm', 'BF HEY!!', 24, false);
@@ -57,18 +48,12 @@ class MenuCharacter extends FlxSprite
 		updateHitbox();
 	}
 
-	public function setCharacter(character:String):Void
-	{
-		if (character == '')
-		{
+	public function setCharacter(character:String):Void {
+		if (character == '') {
 			visible = false;
 			return;
-		}
-		else
-		{
+		} else
 			visible = true;
-		}
-
 		animation.play(character);
 
 		var setting:CharacterSetting = settings[character];

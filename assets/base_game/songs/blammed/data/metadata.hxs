@@ -3,5 +3,7 @@ function onCreateMeta() {
 }
 
 function onUpdateMeta() {
-    stage = 'philly';
+    stage.directory = "week3";
+    stage.name = "philly";
+    dad.name = "pico";
 }

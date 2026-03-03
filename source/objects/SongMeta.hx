@@ -1,14 +1,17 @@
 package objects;
 
 class Info {
+    public var directory:Null<String>;
     public var stage:String;
 	public var name:String;
 	public var artist:String;
 	public var charter:String;
 	public var version:String;
     public var characters:Map<String, String>;
+    public var positions:Map<String, Array<Float>>;
 
 	public function new() {
+        positions = new Map<String, Array<Float>>();
         characters = new Map<String, String>();
     }
 }

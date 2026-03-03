@@ -1,0 +1,39 @@
+function onCharacter() {
+    loadAtlas("bf_car");
+
+    animPrefix("idle", "idle");
+	animPrefix("singUP", "up0");
+    animPrefix("singDOWN", "down0");
+	animPrefix("singLEFT", "left0");
+	animPrefix("singRIGHT", "right0");
+	animPrefix("singUPmiss", "up miss");
+    animPrefix("singDOWNmiss", "down miss");
+	animPrefix("singLEFTmiss", "left miss");
+	animPrefix("singRIGHTmiss", "right miss");
+
+    animIndices("idle-loop", "idle", [10, 11, 12, 13]);
+    animIndices("singUP-loop", "up0", [11, 12, 13, 14]);
+    animIndices("singDOWN-loop", "down0", [26, 27, 28, 29]);
+	animIndices("singLEFT-loop", "left0", [12, 13, 14, 15]);
+	animIndices("singRIGHT-loop", "right0", [58, 59, 60, 61]);
+
+	setOffset("idle");
+	setOffset("singUP", -29, 27);
+    setOffset("singDOWN", -10, -50);
+    setOffset("singLEFT", 12, -6);
+	setOffset("singRIGHT", -38, -7);
+	setOffset("singUPmiss", -29, 27);
+    setOffset("singDOWNmiss", -11, -19);
+    setOffset("singLEFTmiss", 12, 24);
+	setOffset("singRIGHTmiss", -30, 21);
+
+    setOffset("idle-loop");
+	setOffset("singUP-loop", -29, 27);
+    setOffset("singDOWN-loop", -10, -50);
+    setOffset("singLEFT-loop", 12, -6);
+	setOffset("singRIGHT-loop", -38, -7);
+
+	play("idle");
+
+    pos.set[1] = 350;
+}

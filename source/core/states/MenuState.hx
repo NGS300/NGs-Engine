@@ -2,7 +2,7 @@ package core.states;
 
 import flixel.effects.FlxFlicker;
 
-class MenuState extends BeatState {
+class MenuState extends MusicBeatState {
 	var camFollow = new flixel.FlxObject(0, 0, 1, 1);
 	var menuItems = new FlxTypedGroup<FlxSprite>();
     var mainUnder:FlxSprite;
@@ -138,7 +138,7 @@ class MenuState extends BeatState {
 				var selectedItem = menuItems.members[curSelected];
 				FlxFlicker.flicker(selectedItem, 1, 0.06, false, false, function(_) {
 					switch (menuData[curSelected].name) {
-						//case 'story_mode': changeState(StoryState);
+						case 'story_mode': changeState(StoryMenuState);
 						case 'freeplay': changeState(FreeplayState);
 						//case 'mods': changeState(ModsState);
 						//case 'options': changeState(OptionsState);

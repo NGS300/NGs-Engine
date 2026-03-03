@@ -1,0 +1,147 @@
+var moving = false;
+var finishing = false;
+var startedMoving = false;
+var frameTiming = 0.0;
+var cars = 8;
+var cooldown = 0;
+
+var distractions;
+var curLightU = 0;
+var curLight = 0;
+var lightsU;
+var lights;
+var sound;
+
+function onCreate() {
+    distractions = Settings.data.distractions;
+    cam.zoom = 1.05;
+
+    var sky = new BGSprite(-100, 0, "sky", "", 0.1, 0.1);
+	add(sky);
+
+    var cityU = new BGSprite(-100, -125, "city", "", 0.3, 0.3);
+	cityU.setGraphicSize(Std.int(cityU.width * 0.85));
+	cityU.updateHitbox();
+	add(cityU);
+
+    lightsU = new FlxGroup();
+    if (distractions)
+        add(lightsU);
+
+    for (i in 0...5) {
+        var glowU = new BGSprite(cityU.x, cityU.y, "glow" + i, "", 0.3, 0.3);
+        glowU.visible = false;
+        glowU.setGraphicSize(Std.int(glowU.width * 0.85));
+        glowU.updateHitbox();
+        lightsU.add(glowU);
+    }
+
+    var city = new BGSprite(-10, 10, "city", "", 0.3, 0.3);
+	city.setGraphicSize(Std.int(city.width * 0.85));
+	city.updateHitbox();
+	add(city);
+
+    lights = new FlxGroup();
+    if (distractions)
+        add(lights);
+
+    for (i in 0...5) {
+        var glow = new BGSprite(city.x, city.y, "glow" + i, "", 0.3, 0.3);
+        glow.visible = false;
+        glow.setGraphicSize(Std.int(glow.width * 0.85));
+        glow.updateHitbox();
+        lights.add(glow);
+    }
+
+    var portico = new BGSprite(-40, 50, "portico", "");
+	add(portico);
+
+    train = new BGSprite(2000, 360, "train", "");
+    train.active = true;
+	if (distractions)
+		add(train);
+
+    sound = new FlxSound().loadEmbedded(Paths.sound("train_moving", ""));
+	FlxG.sound.list.add(sound);
+
+	var street = new BGSprite(portico.x, portico.y, "street", "");
+	add(street);
+}
+
+function start() {
+	moving = true;
+	if (!sound.playing)
+		sound.play(true);
+}
+
+function restart() {
+	if (GF != null) {
+		GF.danced = false;
+		GF.play("hairFall");
+		GF.specialAnim = true;
+	}
+    
+	train.x = FlxG.width + 200;
+	moving = false;
+	cars = 8;
+	finishing = false;
+	startedMoving = false;
+}
+
+function onUpdate(elapsed) {
+	if (moving && distractions) {
+		frameTiming += elapsed;
+		if (frameTiming >= 1 / 24) {
+			if (sound.time >= 4700) {
+				startedMoving = true;
+				if (GF != null) {
+					GF.specialAnim = true;
+                    GF.play("hairBlow");
+				}
+			}
+
+			if (startedMoving) {
+				train.x -= 400;
+				if (train.x < -2000 && !finishing) {
+					train.x = -1150;
+					cars -= 1;
+
+					if (cars <= 0)
+						finishing = true;
+				}
+
+				if (train.x < -4000 && finishing)
+					restart();
+			}
+			frameTiming = 0;
+		}
+	}
+}
+
+function onBeat() {
+    if (distractions) {
+        if (!moving)
+            cooldown += 1;
+        
+        if (curBeat % 4 == 0) {
+            lights.forEach(function(spr) {
+                spr.visible = false;
+            });
+
+            lightsU.forEach(function(spr) {
+                spr.visible = false;
+            });
+
+            curLightU = randomInt(0, lights.members.length - 1);
+            lightsU.members[curLightU].visible = true;
+
+            curLight = randomInt(0, lights.members.length - 1);
+            lights.members[curLight].visible = true;
+        }
+
+        if (curBeat % 8 == 4 && FlxG.random.bool(30) && !moving && cooldown > 8) {
+            cooldown = randomInt(-4, 0);
+            start();
+        }
+    }
+}

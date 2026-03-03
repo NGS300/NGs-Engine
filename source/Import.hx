@@ -4,8 +4,8 @@ package;
 
 // Engine
 import core.HScript;
-import core.Settings;
-import core.Controls;
+import core.backend.Settings;
+import core.backend.Controls;
 //import core.Conductor;
 import util.CoolUtil;
 import util.debug.Log;
@@ -15,6 +15,8 @@ import objects.BGSprite;
 import objects.BGGraphic;
 import core.states.PlayState;
 import util.debug.DiscordClient;
+import core.backend.MusicBeatState;
+import core.backend.MusicBeatSubState;
 
 // Flixel
 import flixel.sound.FlxSound;

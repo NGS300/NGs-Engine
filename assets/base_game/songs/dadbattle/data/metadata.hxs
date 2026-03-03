@@ -4,5 +4,5 @@ function onCreateMeta() {
 }
 
 function onUpdateMeta() {
-    
+    dad.name = 'dad';
 }

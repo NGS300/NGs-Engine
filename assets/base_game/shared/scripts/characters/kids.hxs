@@ -1,0 +1,22 @@
+function onCharacter() {
+    loadAtlas('kids');
+    animIndices('danceLeft', 'idle', [1, 2, 3, 6, 7, 8]);
+	animIndices('danceRight', 'idle', [9, 10, 11, 12, 13, 14, 15, 16]);
+    animPrefix('singUP', 'up');
+	animPrefix('singDOWN', 'down');
+	animPrefix('singLEFT', 'left');
+	animPrefix('singRIGHT', 'right');
+    animPrefix('cheer', 'cheer');
+
+	setOffset('danceLeft');
+	setOffset('danceRight');
+	setOffset("singUP", -27, 24);
+    setOffset("singDOWN", -60, -140);
+    setOffset("singLEFT", 115, -16);
+	setOffset("singRIGHT", -150, -14);
+    setOffset("cheer", 50, 28);
+
+	play('danceRight');
+
+    pos.set[1] = 200;
+}

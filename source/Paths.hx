@@ -6,14 +6,18 @@ import flash.media.Sound;
 /**
 	** A Core class which handles determining asset paths.
  */
-class Paths {
+class Paths extends PathsUtil {
 	public static function clearMemoryCache()
 		PathsUtil.clearStoredMemory();
 	public static function clearUnusedCache()
 		PathsUtil.clearUnusedMemory();
 
+	static public var currentLevel:Null<String> = null;
+	public static function setWeekFolder(name:String):Void
+		currentLevel = name.toLowerCase();
+
 	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType):String
-		return PathsUtil.getPath(file, folder, type ?? TEXT);
+		return PathsUtil.getPath(file, folder ?? "shared", type ?? TEXT);
 
 	public static function font(key:String, ?folder:String, print = true):String
 		return PathsUtil.font(key, folder, print);

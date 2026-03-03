@@ -1,0 +1,13 @@
+function onCreateMeta() {
+    difficulties = ["normal", "hard"];
+}
+
+function onUpdateMeta() {
+    stage.directory = 'week4';
+    stage.name = 'limo';
+
+    gf.name = 'gf-car';
+    dad.name = 'mom-car';
+    bf.name = 'bf-car';
+    bf.pos = [1030, -120];
+}

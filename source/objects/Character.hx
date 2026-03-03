@@ -9,7 +9,7 @@ class Character extends CharSprite {
     var script:HScript;
     public function new(?x:Float, ?y:Float, ?char:String, ?isPlayer:Bool) {
         super(x ?? 0, y ?? 0, char, isPlayer);
-        change(char ?? 'bf');
+        change(char);
     }
 
     public function change(char:String) {
@@ -17,33 +17,40 @@ class Character extends CharSprite {
         curCharacter = char;
         script = new HScript('characters/$char');
         script.canObjects = false;
-        script.set('loadAtlas', loadAtlas);
+        script.set("loadAtlas", loadAtlas);
 
-        script.set('animPrefix', newPrefix);
-        script.set('animIndices', newIndices);
-        script.set('setOffset', newOffset);
-        script.set('play', playAnim);
+        script.set("animPrefix", newPrefix);
+        script.set("animIndices", newIndices);
+        script.set("setOffset", newOffset);
+        script.set("play", playAnim);
 
-        script.set('flipY', flipY);
-        script.set('width', width);
-        script.set('height', height);
-        script.set('scale', scale);
-        script.set('size', setSize);
-        script.set('graphicSize', setGraphicSize);
-        script.set('updateBox', updateHitbox);
+        script.set("flipX", false);
+        script.set("flipY", false);
+        script.set("width", width);
+        script.set("height", height);
+        script.set("scale", { set: [0, 0], x: 0, y: 0 });
+        script.set("size", setSize);
+        script.set("graphicSize", setGraphicSize);
+        script.set("updateBox", updateHitbox);
 
-        script.set('singTimer', singDuration);
+        script.set("canDancedSing", singDanced);
+        script.set("singTimer", singDuration);
         script.set("pos", { set: [0, 0], cam: [0, 0] });
-        script.call('onNew');
+        script.call("onCharacter");
 
         positionArray = script.getFloatArray("pos.set");
         cameraPosition  = script.getFloatArray("pos.cam");
 
-        var flip = script.get('flipX') ?? null;
-        flipX = (flip is Bool) ? flip : false;
+        var FLIPX = script.get("flipX") ?? null;
+        flipX = (FLIPX is Bool) ? FLIPX : false;
+
+        var FLIPY = script.get("flipY") ?? null;
+        flipY = (FLIPY is Bool) ? FLIPY : false;
         
         var raw:Null<Bool> = cast script.get("antialiasing") ?? null;
-        antialiasing = (raw != null ? raw : (Stage.isPixel ? false : Settings.data.antialiasing));
+        antialiasing = (raw != null ? raw : (core.backend.Stage.isPixel ? false : Settings.data.antialiasing));
+
+        singDanced = script.getBool("canDancedSing") ?? false;
 
         skipDance = false;
         recalcDance();

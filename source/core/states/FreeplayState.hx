@@ -2,19 +2,20 @@ package core.states;
 
 import objects.SongMeta;
 
-class FreeplayState extends BeatState {
+class FreeplayState extends MusicBeatState {
     var grpSongs:FlxTypedGroup<Item>;
     var songs:Array<Data>;
 
+    static var curDifficulty:Int = 0;
     static var curSelected:Int = 0;
 	var diffNames:Array<String>;
-	var curDifficulty:Int = 0;
 	var songInfo = new Info();
     var metaScript:HScript;
 
     var idleOscillating:Bool = false;
     var idleDelay:Float = 2.7;
     var idleTimer:Float = 0;
+    var colorTween:FlxTween;
     var intendedColor:Int;
     var bg:BGSprite;
 
@@ -23,7 +24,7 @@ class FreeplayState extends BeatState {
 
     override function create() {
         transOut = FlxTransitionableState.defaultTransOut;
-        var script = new HScript('songList');
+        var script = new HScript("songList");
         var lists = new List();
         script.set("songs", function(name:Dynamic, ?characters:Dynamic, ?forceWeek:Int) {
             lists.add(name, characters, forceWeek);
@@ -31,7 +32,7 @@ class FreeplayState extends BeatState {
         script.call('onCreate');
         songs = lists.songs;
 
-        bg = new BGSprite(0, 0, 'menus/freeplay/desat');
+        bg = new BGSprite(0, 0, "menus/freeplay/desat");
         bg.screenCenter();
         add(bg);
 
@@ -67,22 +68,28 @@ class FreeplayState extends BeatState {
 
         if (controls.ACCEPT && songInfo.name != null && songInfo.name.length > 0) {
             var input = CoolUtil.normalizeName(songs[curSelected].song).toLowerCase();
-            PlayState.SONG = Song.load('charts/' + diffNames[curDifficulty], 'songs/' + input);
+            PlayState.SONG = Song.load("charts/" + diffNames[curDifficulty], "songs/" + input);
             PlayState.isStoryMode = false;
             PlayState.storyDifficulty = curDifficulty;
             PlayState.storyWeek = songs[curSelected].week;
+
+            PlayState.song.directory = songInfo.directory;
+			PlayState.song.stage = songInfo.stage;
 
 			PlayState.song.isStory = false;
             PlayState.difficulty.name = diffNames[curDifficulty];
             PlayState.difficulty.index = curDifficulty;
 
-			PlayState.song.stage = songInfo.stage;
-            PlayState.song.version = songInfo.version;
+            var version = songInfo.version;
+            if (version != null && version.length > 0 && version.charAt(0).toLowerCase() == "v")
+                version = version.substr(1);
+            PlayState.song.version = "v" + version;
+
             PlayState.song.name = songInfo.name;
             PlayState.song.artist = songInfo.artist;
             PlayState.song.charter = songInfo.charter;
 			PlayState.song.characters = songInfo.characters;
-
+            PlayState.song.positions = songInfo.positions;
 
             trace('song dir: ' + Song.load('charts/' + diffNames[curDifficulty], 'songs/' + input));
             LoadingState.loadAndSwitchState(PlayState);
@@ -168,7 +175,6 @@ class FreeplayState extends BeatState {
         }
         changeDiff();
     }
-    var colorTween:FlxTween;
 
     function startOscillation():Void {
         idleOscillating = true;
@@ -207,7 +213,7 @@ class FreeplayState extends BeatState {
 		var hasScript = prepareMetaScript();
 		if (hasScript) {
 			metaScript.set("difficulties", ["unknown"]);
-			metaScript.set("song", { name: 'unknown' });
+			metaScript.set("song", { name: "unknown" });
 			metaScript.call('onCreateMeta');
 		}
 
@@ -250,28 +256,31 @@ class FreeplayState extends BeatState {
     function updateMeta():Void {
         if (metaScript == null) return;
 
-        metaScript.set("diff", diffNames[curDifficulty]);
-		metaScript.set("stage", 'stage');
+        metaScript.set("difficulty", diffNames[curDifficulty]);
+		metaScript.set("stage", { name : "stage", directory: "week1" });
 		metaScript.set("song", {
             artist: "unknown",
             charter: "unknown",
-            version: "v0.0.0.0"
+            version: "v0.0.0"
         });
 
-		metaScript.set("character", {
-            gf: "gf",
-            dad: "dad",
-            bf: "bf"
-        });
+        metaScript.set("gf", { name: "gf", pos: [400, 130], cam: [0, 0] });
+        metaScript.set("dad", { name: "face", pos: [100, 100], cam: [0, 0] });
+        metaScript.set("bf", { name: "bf", pos: [770, 100], cam: [0, 0] });
         metaScript.call("onUpdateMeta");
 
-		songInfo.stage  = metaScript.getString("stage");
+        songInfo.directory = metaScript.getString("stage.directory");
+		songInfo.stage  = metaScript.getString("stage.name");
 		songInfo.artist = metaScript.getString("song.artist");
 		songInfo.charter  = metaScript.getString("song.charter");
-		songInfo.version = metaScript.getString('song.version');
+		songInfo.version = metaScript.getString("song.version");
 
-		songInfo.characters.set('gf', metaScript.getString('character.gf'));
-		songInfo.characters.set('dad', metaScript.getString('character.dad'));
-		songInfo.characters.set('bf', metaScript.getString('character.bf'));
+		songInfo.characters.set("gf", metaScript.getString("gf.name"));
+		songInfo.characters.set("dad", metaScript.getString("dad.name"));
+		songInfo.characters.set("bf", metaScript.getString("bf.name"));
+
+        songInfo.positions.set("gf", metaScript.getFloatArray("gf.pos"));
+        songInfo.positions.set("dad", metaScript.getFloatArray("dad.pos"));
+        songInfo.positions.set("bf", metaScript.getFloatArray("bf.pos"));
     }
 }

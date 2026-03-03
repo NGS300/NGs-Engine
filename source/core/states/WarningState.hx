@@ -1,6 +1,6 @@
 package core.states;
 
-class WarningState extends BeatState {
+class WarningState extends MusicBeatState {
 	var texts = new FlxTypedSpriteGroup<FlxText>();
 	var isBouce:Bool = false;
 	var isYes:Bool = true;

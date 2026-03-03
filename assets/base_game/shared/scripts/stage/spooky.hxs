@@ -1,0 +1,39 @@
+var lightningStrikeBeat = 0;
+var lightningOffset = 8;
+var spookyBG;
+
+function onCreate() {
+    dad.pos[0] -= 40;
+    dad.cam[0] += 40;
+    
+    bf.pos[0] += 140;
+    bf.cam = [-30, -75];
+
+    spookyBG = new BGAnim(-200, -100, "bg", "");
+    spookyBG.prefix("idle", "bg", true);
+    spookyBG.prefix("thunder", "lightning");
+    spookyBG.dance();
+    add(spookyBG);
+
+    for (i in 0...2)
+        Paths.sound("thunder" + i, "");
+}
+
+function onBeat() {
+    if (Settings.data.distractions && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
+	    lightningStrike();
+}
+
+function lightningStrike() {
+	FlxG.sound.play(Paths.soundRandom("thunder", 0, 1, ""));
+	spookyBG.play("thunder");
+
+	lightningStrikeBeat = curBeat;
+	lightningOffset = FlxG.random.int(8, 24);
+
+	if (BF.hasAnim("scared"))
+		BF.play("scared", true);
+
+	if (GF != null && GF.hasAnim("scared"))
+		GF.play("scared", true);
+}

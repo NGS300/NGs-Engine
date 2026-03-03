@@ -1,0 +1,29 @@
+function onCharacter() {
+    loadAtlas("pico");
+
+    animPrefix("idle", "idle");
+	animPrefix("singUP", "up0");
+	animPrefix("singDOWN", "down0");
+    animPrefix("singLEFT", "left0");
+	animPrefix("singRIGHT", "right0");
+    animPrefix("singUPmiss", 'up miss');
+	animPrefix("singDOWNmiss", 'down miss');
+    animPrefix("singLEFTmiss", 'left miss');
+	animPrefix("singRIGHTmiss", 'right miss');
+
+    setOffset("idle");
+	setOffset("singUP", -29, 27);
+    setOffset("singDOWN", 200, -70);
+	setOffset("singLEFT", 65, 9);
+    setOffset("singRIGHT", -68, -7);
+    setOffset("singUPmiss", -19, 67);
+    setOffset("singDOWNmiss", 210, -28);
+    setOffset("singLEFTmiss", 62, 64);
+	setOffset("singRIGHTmiss", -60, 41);
+
+    play("idle");
+
+    flipX = true;
+
+    pos.set[1] = 300;
+}

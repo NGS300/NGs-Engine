@@ -2,7 +2,7 @@ package core.states;
 
 import flixel.FlxState;
 
-class LoadingState extends BeatState {
+class LoadingState extends MusicBeatState {
 	inline static final MIN_TIME:Float = 1.0;
 	var callbacks:MultiCallback;
 	var target:Class<FlxState>;
@@ -43,8 +43,15 @@ class LoadingState extends BeatState {
 
 	inline static public function loadAndSwitchState(target:Class<FlxState>, stopMusic:Bool = false):Void {
 		FlxG.switchState(() -> {
-			final song = PlayState.song.name;
+			var directory:String = 'shared';
+			var weekDir:String = PlayState.song.directory;
+			//PlayState.song.directory = null;
 
+			if (weekDir != null && weekDir.length > 0 && weekDir != '') directory = weekDir;
+
+			Paths.setWeekFolder(directory);
+
+			final song = PlayState.song.name;
 			final inst = Paths.inst(song);
 			final voices = PlayState.SONG.needsVoices ? Paths.voices(song) : null;
 

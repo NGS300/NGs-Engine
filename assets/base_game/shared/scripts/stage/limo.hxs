@@ -1,0 +1,85 @@
+var carCanDrive = true;
+var distractions;
+var limoDancers;
+var limoFront;
+var car;
+
+function onCreate() {
+    distractions = Settings.data.distractions;
+    bf.cam = [-200];
+
+    var bg = new BGSprite(-120, -50, "sunset", "", 0.1, 0.1);
+    add(bg);
+
+    var limoBack = new BGAnim(-200, 480, "limoBack", "", 0.4, 0.4);
+    limoBack.prefix("idle", "driving", true);
+    limoBack.dance();
+    add(limoBack);
+
+    if (distractions) {
+        dancers = new FlxGroup();
+        add(dancers);
+
+        for (i in 0...5) {
+            var dancer = new BGAnim((370 * i) + 130, limoBack.y - 400, "dancer", "", 0.4, 0.4);
+            dancer.indices("danceLeft", "dancer sketch", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+            dancer.indices("danceRight", "dancer sketch", [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]);
+            dancer.dance();
+            dancers.add(dancer);
+        }
+    }
+
+    var overlay = new BGSprite(-400, -600, "overlay", "");
+    overlay.alpha = 0.3;
+    overlay.blend = BlendMode.ADD;
+    add(overlay);
+
+    limoFront = new BGAnim(-120, 550, "limoFront", "");
+    limoFront.prefix("idle", "driving", true);
+    limoFront.dance();
+
+    car = new BGSprite(-300, 160, "blurCar", "");
+    car.active = true;
+    if (distractions) {
+		resetCar();
+		add(car);
+	}
+}
+
+function onAddBehind(of) {
+    if (of == 'dad')
+        add(limoFront);
+}
+
+function carDrive() {
+	if (Settings.data.distractions) {
+        carCanDrive = false;
+
+		FlxG.sound.play(Paths.soundRandom("carPass", 0, 1, ""), 0.7);
+		car.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
+
+		new FlxTimer().start(2, function(tmr) {
+			resetCar();
+		});
+	}
+}
+
+function resetCar() {
+	if (distractions) {
+		car.x = -12600;
+		car.y = FlxG.random.int(140, 250);
+		car.velocity.x = 0;
+		carCanDrive = true;
+	}
+}
+
+function onBeat() {
+    if (distractions){
+		dancers.forEach(function(dancer) {
+			dancer.dance();
+		});
+        
+		if (FlxG.random.bool(10) && carCanDrive)
+			carDrive();
+    }
+}

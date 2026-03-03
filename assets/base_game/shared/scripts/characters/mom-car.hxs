@@ -1,0 +1,29 @@
+function onCharacter() {
+    loadAtlas('mom_car');
+    
+    animPrefix("idle", "idle");
+	animPrefix("singUP", "up");
+    animPrefix("singDOWN", "down");
+    animPrefix("singLEFT", "left");
+	animPrefix("singRIGHT", "right");
+
+    animIndices("idle-loop", "idle", [10, 11, 12, 13]);
+	animIndices("singUP-loop", "up", [11, 12, 13, 14]);
+    animIndices("singDOWN-loop", "down", [11, 12, 13, 14]);
+    animIndices("singLEFT-loop", "left", [6, 7, 8, 9]);
+	animIndices("singRIGHT-loop", "right", [6, 7, 8, 9]);
+
+    setOffset("idle");
+	setOffset("singUP", 14, 71);
+    setOffset("singDOWN", 20, -160);
+	setOffset("singRIGHT", 10, -60);
+	setOffset("singLEFT", 250, -23);
+
+    setOffset("idle-loop");
+	setOffset("singUP-loop", 14, 71);
+    setOffset("singDOWN-loop", 20, -160);
+	setOffset("singRIGHT-loop", 10, -60);
+	setOffset("singLEFT-loop", 250, -23);
+
+    play("idle");
+}

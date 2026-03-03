@@ -15,7 +15,6 @@ import flixel.graphics.frames.FlxAtlasFrames;
 @:access(openfl.display.BitmapData)
 class PathsUtil {
 	public static final soundFile:String = #if web "mp3" #else "ogg" #end;
-	static var currentLevel:Null<String> = null;
 	public static function excludeAsset(key:String) {
 		if (!dumpExclusions.contains(key))
 			dumpExclusions.push(key);
@@ -101,9 +100,6 @@ class PathsUtil {
 		FlxG.bitmap.remove(graphic);
 	}
 
-	public static function setCurrentLevel(name:String):Void
-		currentLevel = name.toLowerCase();
-
 	inline public static function existsAny(path:String, ?type:openfl.utils.AssetType):Bool {
 		#if sys
 		if (FileSystem.exists(path))
@@ -113,7 +109,7 @@ class PathsUtil {
 	}
 
 	public static function getPath(file:String, ?folder:String, ?type:openfl.utils.AssetType):String {
-		var ty = type ?? TEXT;
+		var i = type ?? TEXT;
 		#if MODS_ALLOWED
 		if (true) {
 			// Future mod system here
@@ -121,13 +117,14 @@ class PathsUtil {
 		}
 		#end
 		
-		if (folder != null)
+		if (folder != null && folder.length > 0)
 			return getFolderPath(file, folder);
 
-		if (currentLevel != null && currentLevel != 'shared') {
-			var levelPath = getFolderPath(file, currentLevel);
-			if (OpenFlAssets.exists(levelPath, ty))
-				return levelPath;
+		var curLevel = Paths.currentLevel;
+		if (curLevel != null && curLevel != 'shared') {
+			var path = getFolderPath(file, curLevel);
+			if (OpenFlAssets.exists(path, i))
+				return path;
 		}
 
 		return getSharedPath(file);
@@ -136,7 +133,7 @@ class PathsUtil {
 	inline static public function getFolderPath(file:String, folder = "shared")
 		return 'assets/$folder/$file';
 
-	inline public static function getSharedPath(file = '')
+	inline public static function getSharedPath(file:String)
 		return 'assets/shared/$file';
 
 	inline static public function formatPath(path:String) {
