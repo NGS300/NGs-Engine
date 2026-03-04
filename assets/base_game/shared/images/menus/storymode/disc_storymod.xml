@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="texture.png" width="311" height="625">
+	<SubTexture name="disc0000" x="1" y="1" width="309" height="310" frameX="-0" frameY="-0"
+		frameWidth="309" frameHeight="310" />
+	<SubTexture name="disc0001" x="1" y="314" width="309" height="310" frameX="-0" frameY="-0"
+		frameWidth="309" frameHeight="310" />
+</TextureAtlas>
