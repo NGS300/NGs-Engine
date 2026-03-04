@@ -5,67 +5,118 @@ var frameTiming = 0.0;
 var cars = 8;
 var cooldown = 0;
 
+var activeLight = 0;
+var activeColor = 0;
+
+var useBurst = false;
+
+var lights = {
+	builds: [],
+	lightGlow: [],
+	lightsGlowBurst: [],
+	city: {},
+};
+
 var distractions;
-var curLightU = 0;
-var curLight = 0;
-var lightsU;
-var lights;
 var sound;
 
-function onCreate() {
-    distractions = Settings.data.distractions;
-    cam.zoom = 1.05;
+var colors = [
+	0xFD4531,
+	0xFB33F5,
+	0x31FD8C,
+	0xFBA633,
+	0x31A2FD,
+	0xFFFFFF,
+];
 
-    var sky = new BGSprite(-100, 0, "sky", "", 0.1, 0.1);
+function onCreate() {
+	distractions = Settings.data.distractions;
+	cam.zoom = 1.05;
+
+	var sky = new BGSprite(-100, 0, "sky", "", 0.1, 0.1);
 	add(sky);
 
-    var cityU = new BGSprite(-100, -125, "city", "", 0.3, 0.3);
-	cityU.setGraphicSize(Std.int(cityU.width * 0.85));
-	cityU.updateHitbox();
-	add(cityU);
 
-    lightsU = new FlxGroup();
-    if (distractions)
-        add(lightsU);
+	//-100, -125
+	//addCity("cityUP", -100, -125, 0.85);
+	addCity("cityUP", -100, -150, 0.85);
 
-    for (i in 0...5) {
-        var glowU = new BGSprite(cityU.x, cityU.y, "glow" + i, "", 0.3, 0.3);
-        glowU.visible = false;
-        glowU.setGraphicSize(Std.int(glowU.width * 0.85));
-        glowU.updateHitbox();
-        lightsU.add(glowU);
-    }
+	//-10, 10
+	addCity("cityFRONT", -10, -50, 0.85);
 
-    var city = new BGSprite(-10, 10, "city", "", 0.3, 0.3);
-	city.setGraphicSize(Std.int(city.width * 0.85));
-	city.updateHitbox();
-	add(city);
 
-    lights = new FlxGroup();
-    if (distractions)
-        add(lights);
-
-    for (i in 0...5) {
-        var glow = new BGSprite(city.x, city.y, "glow" + i, "", 0.3, 0.3);
-        glow.visible = false;
-        glow.setGraphicSize(Std.int(glow.width * 0.85));
-        glow.updateHitbox();
-        lights.add(glow);
-    }
-
-    var portico = new BGSprite(-40, 50, "portico", "");
+	var portico = new BGSprite(-40, 50, "portico", "");
 	add(portico);
 
-    train = new BGSprite(2000, 360, "train", "");
-    train.active = true;
+	train = new BGSprite(2000, 360, "train_move", "");
+	train.active = true;
 	if (distractions)
 		add(train);
 
-    sound = new FlxSound().loadEmbedded(Paths.sound("train_moving", ""));
+	sound = new FlxSound().loadEmbedded(Paths.sound("train_moving", ""));
 	FlxG.sound.list.add(sound);
 
 	var street = new BGSprite(portico.x, portico.y, "street", "");
 	add(street);
+}
+
+function addCity(tag, x, y, scale)
+{
+	var city = new BGSprite(x, y, "city", "", 0.3, 0.3);
+	city.scale.set(scale, scale);
+	city.updateHitbox();
+
+	activeLight = FlxG.random.int(0, colors.length - 1);
+	activeColor = colors[activeLight];
+
+	lights.city[tag] = city;
+	add(city);
+
+	var lightBuild = new BGSprite(x, y, 'light_building', "", 0.3, 0.3);
+	lightBuild.x = x;
+	lightBuild.y = y;
+	lightBuild.alpha = 1;
+	lightBuild.scale.set(scale, scale);
+	lightBuild.updateHitbox();
+	lightBuild.color = activeColor;
+
+	lights.builds.push(lightBuild);
+	add(lightBuild);
+
+	lightBuildGlow = new BGSprite(x, y, 'light_building_blur', "", 0.3, 0.3);
+	lightBuildGlow.alpha = 1;
+	lightBuildGlow.blend = BlendMode.ADD;
+	lightBuildGlow.scale.set(scale, scale);
+	lightBuildGlow.updateHitbox();
+	lightBuildGlow.color = activeColor;
+
+	lights.lightGlow.push(lightBuildGlow);
+	add(lightBuildGlow);
+
+	lightGlowBurst = new BGSprite(x, y, 'light_building_glow', "", 0.3, 0.3);
+	lightGlowBurst.alpha = 0;
+	lightGlowBurst.blend = BlendMode.ADD;
+	lightGlowBurst.scale.set(scale, scale);
+	lightGlowBurst.updateHitbox();
+	lightGlowBurst.color = activeColor;
+
+	lights.lightsGlowBurst.push(lightGlowBurst);
+	add(lightGlowBurst);
+}
+
+function makeRandomColor()
+{
+	var al = FlxG.random.int(0, colors.length - 1);
+	c = colors[al];
+
+	for(light in lights.builds)
+		light.color = c;
+
+	for(light in lights.lightGlow)
+		light.color = c;
+
+	for(light in lights.lightsGlowBurst)
+		light.color = c;
 }
 
 function start() {
@@ -80,7 +131,7 @@ function restart() {
 		GF.play("hairFall");
 		GF.specialAnim = true;
 	}
-    
+	
 	train.x = FlxG.width + 200;
 	moving = false;
 	cars = 8;
@@ -88,7 +139,8 @@ function restart() {
 	startedMoving = false;
 }
 
-function onUpdate(elapsed) {
+function updateTrain(elapsed)
+{
 	if (moving && distractions) {
 		frameTiming += elapsed;
 		if (frameTiming >= 1 / 24) {
@@ -96,7 +148,7 @@ function onUpdate(elapsed) {
 				startedMoving = true;
 				if (GF != null) {
 					GF.specialAnim = true;
-                    GF.play("hairBlow");
+					GF.play("hairBlow");
 				}
 			}
 
@@ -118,30 +170,66 @@ function onUpdate(elapsed) {
 	}
 }
 
-function onBeat() {
-    if (distractions) {
-        if (!moving)
-            cooldown += 1;
+function onUpdate(elapsed) {
+	updateTrain(elapsed);
+
+	for(light in lights.builds)
+		if (light.alpha > 0)
+			light.alpha -= (Conductor.crochet / 1000) * 2 * FlxG.elapsed;
+
+	for(light in lights.lightGlow)
+		if (light.alpha > 0)
+			light.alpha -= (Conductor.crochet / 1000) * 2 * FlxG.elapsed;
+
+	for(light in lights.lightsGlowBurst)
+		if (light.alpha > 0)
+			light.alpha -= (Conductor.crochet / 1000) * 2 * FlxG.elapsed;
+}
+
+function beatLight(useBurst)
+{
+	for(i in 0 ... lights.builds.length)
+	{
+		activeLight = FlxG.random.int(0, colors.length - 1);
+		activeColor = colors[activeLight];
+
+		lights.builds[i].alpha = 1;
+		lights.builds[i].color = activeColor;
+
+		lights.lightGlow[i].alpha = 1;
+		lights.lightGlow[i].color = activeColor;
         
-        if (curBeat % 4 == 0) {
-            lights.forEach(function(spr) {
-                spr.visible = false;
-            });
+		if (useBurst)
+		{
+			lights.lightsGlowBurst[i].alpha = 1;
+			lights.lightsGlowBurst[i].color = activeColor;
+		}
+		if(i == 2)
+		{
+			activeLight = FlxG.random.int(0, colors.length - 1);
+			activeColor = colors[activeLight];
+		}
+	}
 
-            lightsU.forEach(function(spr) {
-                spr.visible = false;
-            });
+//makeRandomColor();
+}
 
-            curLightU = randomInt(0, lights.members.length - 1);
-            lightsU.members[curLightU].visible = true;
+function onBeat() {
+	if (distractions) {
+		if (!moving)
+			cooldown += 1;
 
-            curLight = randomInt(0, lights.members.length - 1);
-            lights.members[curLight].visible = true;
-        }
+		activeLight = FlxG.random.int(0, colors.length - 1);
+		activeColor = colors[activeLight];
+	
+		if (curBeat % 4 == 0) 
+			beatLight(false);
+		if (curBeat % 8 == 0 && curBeat > 0)
+			beatLight(true);
 
-        if (curBeat % 8 == 4 && FlxG.random.bool(30) && !moving && cooldown > 8) {
-            cooldown = randomInt(-4, 0);
-            start();
-        }
-    }
+		if (curBeat % 8 == 4 && FlxG.random.bool(30) && !moving && cooldown > 8) {
+			cooldown = randomInt(-4, 0);
+			start();
+		}
+	}
 }
