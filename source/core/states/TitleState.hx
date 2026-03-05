@@ -12,6 +12,8 @@ class TitleState extends MusicBeatState
 	var gradDown:FlxSprite;
 	var gradUp:FlxSprite;
 
+	var scaleTarget:Float = 0;
+
 	static var initialized:Bool = false; // Only play the credits once per session.
 
 	var transitioning:Bool = false;
@@ -69,6 +71,8 @@ class TitleState extends MusicBeatState
 		gradDown.color = 0xFF680000;
 		gradDown.screenCenter(X);
 		gradDown.y = FlxG.height - gradDown.height;
+		gradDown.y += 30;
+		gradDown.flipY = true;
 		gradDown.alpha = 0.5;
 		add(gradDown);
 
@@ -76,6 +80,7 @@ class TitleState extends MusicBeatState
 		gradUp.antialiasing = Settings.data.antialiasing;
 		// gradUp.setGraphicSize(1880, 256);
 		gradUp.color = 0xFFFF0000;
+		gradUp.y -= 30;
 		gradUp.screenCenter(X);
 		gradUp.flipY = true;
 		gradUp.alpha = 0.3;
@@ -83,18 +88,23 @@ class TitleState extends MusicBeatState
 
 		logoSpr = new FlxSprite(250, 142);
 		logoSpr.frames = Paths.atlas(i + 'logos');
-		logoSpr.setGraphicSize(Std.int(logoSpr.width * 0.6), Std.int(logoSpr.height * 0.6));
+		// logoSpr.setGraphicSize(Std.int(logoSpr.width * 0.6), Std.int(logoSpr.height * 0.6));
+		logoSpr.scale.set(scaleTarget, scaleTarget);
+		logoSpr.centerOrigin();
+
+		logoSpr.screenCenter();
 		logoSpr.animation.addByPrefix('bump', 'bump0', 24, false);
 		logoSpr.antialiasing = Settings.data.antialiasing;
-		logoSpr.animation.play('bump');
+		// logoSpr.animation.play('bump');
 		logoSpr.updateHitbox();
 		add(logoSpr);
 
 		var isMobile = (Main.os.isMobile ? true : false);
 		titleText = new FlxSprite((isMobile ? 60 : 122) + (flixel.math.FlxPoint.get().x / 2), 590);
-		titleText.frames = Paths.atlas(i + 'titleEnter' + (!isMobile ? '' : '_mobile'));
-		titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
-		titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
+		titleText.frames = Paths.atlas(i + 'title' + (!isMobile ? '_enter' : '_tap'));
+		// titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
+		titleText.animation.addByIndices("idle", "ENTER PRESSED", [1], "", 24);
+		titleText.animation.addByIndices('press', "ENTER PRESSED", [0, 1], "", 24);
 		titleText.antialiasing = Settings.data.antialiasing;
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
@@ -139,7 +149,9 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		logoSpr?.animation.play('bump', true);
+		// logoSpr?.animation.play('bump', true);
+
+		scaleTarget = 0.67;
 
 		if (skippedIntro)
 			return;
@@ -177,6 +189,9 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		scaleTarget = FlxMath.lerp(scaleTarget, 0.6, 0.094);
+		logoSpr.scale.set(scaleTarget, scaleTarget);
+
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
@@ -197,6 +212,8 @@ class TitleState extends MusicBeatState
 				skipIntro();
 			else if (!transitioning)
 			{
+				FlxTween.cancelTweensOf(titleText);
+				titleText.color = 0xFFFFFFFF;
 				titleText?.animation.play('press');
 				transitioning = true;
 				FlxG.camera.flash(Settings.data.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 1);
@@ -236,6 +253,7 @@ class TitleState extends MusicBeatState
 			FlxG.camera.flash(FlxColor.WHITE, initialized ? 1 : 4);
 			remove(blackScreen);
 			skippedIntro = true;
+			logoSpr.screenCenter();
 			FlxTween.angle(logoSpr, -6, 6, 2.5, {
 				ease: FlxEase.quadInOut,
 				type: PINGPONG,
@@ -246,6 +264,10 @@ class TitleState extends MusicBeatState
 			});
 			FlxTween.color(gradUp, 2, 0xFF680000, 0xFFff0000, {
 				ease: FlxEase.quadInOut,
+				type: PINGPONG,
+			});
+			FlxTween.color(titleText, 2, 0xFF33FFFF, 0xFF3333CC, {
+				ease: FlxEase.linear,
 				type: PINGPONG,
 			});
 		}

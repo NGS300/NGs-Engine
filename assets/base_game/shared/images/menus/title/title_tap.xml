@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="title_tap.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="ENTER PRESSED TAP0000" x="0" y="0" width="1024" height="72"/>
+	<SubTexture name="ENTER PRESSED TAP0001" x="0" y="92" width="1024" height="72"/>
+</TextureAtlas>
