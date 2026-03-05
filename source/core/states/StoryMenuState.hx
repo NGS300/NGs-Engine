@@ -1,5 +1,6 @@
 package core.states;
 
+import flixel.util.FlxGradient;
 import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup;
 
@@ -78,13 +79,13 @@ class StoryMenuState extends MusicBeatState
 		transOut = FlxTransitionableState.defaultTransOut;
 
 		if (FlxG.sound.music != null)
-		{
 			if (!FlxG.sound.music.playing)
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
-		}
 
 		persistentUpdate = persistentDraw = true;
 		var i = 'menus/storymode/';
+
+		storyModeBGSprites = new FlxTypedGroup<FlxSprite>();
 
 		scoreText = new FlxText(10, 10, 0, "SCORE: 6969696969", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
@@ -109,13 +110,10 @@ class StoryMenuState extends MusicBeatState
 		discPlay.scale.set(1.25, 1.25);
 		discPlay.centerOrigin();
 		discPlay.screenCenter();
-		discPlay.x = FlxG.width;
-		discPlay.y = 0;
+		discPlay.x = FlxG.width - discPlay.width / 2;
+		// discPlay.y = 0;
 
 		var ui_tex = Paths.atlas(i + 'campaign_menu_UI_assets');
-		var storyBG:FlxSprite = new FlxSprite(0, 56);
-
-		storyModeBGSprites = new FlxTypedGroup<FlxSprite>();
 
 		for (img in 0...weeksBGSNames.length)
 		{
@@ -128,6 +126,8 @@ class StoryMenuState extends MusicBeatState
 
 		add(storyModeBGSprites);
 
+		var storyBG:FlxSprite = storyModeBGSprites.members[0];
+
 		var cutSpr:FlxSprite = new FlxSprite();
 		cutSpr.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT, true);
 		add(cutSpr);
@@ -137,23 +137,23 @@ class StoryMenuState extends MusicBeatState
 
 		var vertices = new Array<FlxPoint>();
 		vertices[0] = new FlxPoint(0, 0);
-		vertices[1] = new FlxPoint(480, 0);
+		vertices[1] = new FlxPoint(512, 0);
 		vertices[2] = new FlxPoint(180, FlxG.height);
 		vertices[3] = new FlxPoint(0, FlxG.height);
 		cutSpr.drawPolygon(vertices, FlxColor.BLACK, polyDrawLine, polyRenderStyle);
 
+		var gradient:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, 64, [0xFF000000, 0x00000000], 2);
+		gradient.screenCenter();
+		gradient.y = storyModeBGSprites.members[0].height + gradient.height;
+		add(gradient);
+
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
-
-		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
-		add(blackBarThingie);
 
 		grpWeekCharacters = new FlxTypedGroup<MenuCharacter>();
 
 		grpLocks = new FlxTypedGroup<FlxSprite>();
 		add(grpLocks);
-
-		trace("Line 70");
 
 		for (i in 0...weekData.length)
 		{
@@ -164,9 +164,6 @@ class StoryMenuState extends MusicBeatState
 
 			weekThing.screenCenter(X);
 			weekThing.antialiasing = true;
-			// weekThing.updateHitbox();
-
-			// Needs an offset thingie
 			if (!weekUnlocked[i])
 			{
 				var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
@@ -179,16 +176,12 @@ class StoryMenuState extends MusicBeatState
 			}
 		}
 
-		trace("Line 96");
-
 		grpWeekCharacters.add(new MenuCharacter(0, 100, 0.5, false));
 		grpWeekCharacters.add(new MenuCharacter(450, 25, 0.9, true));
 		grpWeekCharacters.add(new MenuCharacter(850, 100, 0.5, true));
 
 		difficultySelectors = new FlxGroup();
 		add(difficultySelectors);
-
-		trace("Line 124");
 
 		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
@@ -214,9 +207,6 @@ class StoryMenuState extends MusicBeatState
 		rightArrow.animation.play('idle');
 		difficultySelectors.add(rightArrow);
 
-		trace("Line 150");
-
-		add(storyBG);
 		add(grpWeekCharacters);
 
 		txtTracklist = new FlxText(FlxG.width * 0.05, storyBG.x + storyBG.height + 100, 0, "Tracks", 32);
@@ -224,7 +214,6 @@ class StoryMenuState extends MusicBeatState
 		txtTracklist.font = rankText.font;
 		txtTracklist.color = 0xFFe55777;
 		add(txtTracklist);
-		// add(rankText);
 		add(scoreText);
 		add(txtWeekTitle);
 
