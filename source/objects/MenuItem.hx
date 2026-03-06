@@ -54,6 +54,7 @@ class MenuItem extends FlxSpriteGroup
 
 		week.scale.x = FlxMath.lerp(week.scale.x, scaleShit, 0.095);
 		week.scale.y = FlxMath.lerp(week.scale.y, scaleShit, 0.095);
+		week.updateHitbox();
 		alpha = 1 - Math.abs(targetY) * alphaMultiplier;
 
 		if (isFlashing)

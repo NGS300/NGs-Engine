@@ -7,7 +7,7 @@ using flixel.util.FlxSpriteUtil;
 
 class StoryMenuState extends MusicBeatState
 {
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [false, false, true, true, true, true, true];
 
 	var allowedDiffs:Array<String> = ["normal", "hard", "erect"];
 	var allowedModes:Array<String> = ["weeks", "diffs"];
@@ -30,6 +30,10 @@ class StoryMenuState extends MusicBeatState
 	var selectedDiff:Bool = false;
 	var isSelectingWeeks:Bool = true;
 	var currentColor:Int;
+	var lockAngle:Float = 0;
+	var lockAngleTarget:Float = 0;
+	var lockSize:Float = 1;
+	var beats:Int = 0;
 
 	var discCenter:FlxSprite;
 	var discSprite:FlxSprite;
@@ -49,7 +53,10 @@ class StoryMenuState extends MusicBeatState
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
-		persistentUpdate = persistentDraw = true;
+		Conductor.changeBPM(102);
+
+		persistentUpdate = true;
+		persistentDraw = true;
 
 		if (FlxG.sound.music != null)
 			if (!FlxG.sound.music.playing)
@@ -173,6 +180,22 @@ class StoryMenuState extends MusicBeatState
 			grpDiff.add(diffThing);
 		}
 
+		grpLock = new FlxTypedGroup<FlxSprite>();
+		add(grpLock);
+
+		for (i in 0...weekUnlocked.length)
+		{
+			var lockSpr:FlxSprite = new FlxSprite();
+			lockSpr.loadGraphic(Paths.image(path + "lock_new"));
+			lockSpr.updateHitbox();
+			lockSpr.scale.set(1.2, 1.2);
+			lockSpr.ID = i;
+			grpLock.add(lockSpr);
+
+			if (weekUnlocked[i])
+				lockSpr.visible = false;
+		}
+
 		modeSelectorSprites[allowedModes[curMode]].visible = true;
 
 		super.create();
@@ -215,15 +238,7 @@ class StoryMenuState extends MusicBeatState
 		for (item in grpWeekText.members)
 		{
 			if (item != null)
-			{
 				item.targetY = index - curWeek;
-
-				// Se quiser indicar bloqueado
-				// if (!weekUnlocked[index])
-				// item.week.color = FlxColor.GRAY;
-				// else
-				// item.week.color = FlxColor.WHITE;
-			}
 
 			index++;
 		}
@@ -272,11 +287,26 @@ class StoryMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		super.update(elapsed);
-
 		tiledBG.x -= 20 * elapsed;
 		discSprite.angle -= 40 * elapsed;
 		icon.angle = discSprite.angle;
+
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
+
+		for (i in 0...grpLock.members.length)
+		{
+			// lock.angle = FlxMath.lerp(lock.angle, lockAngle, 0.085);
+			var lock:FlxSprite = grpLock.members[i];
+			var item:MenuItem = grpWeekText.members[lock.ID];
+
+			lock.x = item.x + item.week.width + 8;
+			lock.y = item.y;
+			lock.alpha = item.alpha;
+			lockSize = FlxMath.lerp(lockSize, 1.2, 0.075);
+			lock.scale.set(lockSize, lockSize);
+			lock.angle = FlxMath.lerp(lock.angle, lockAngle, 0.075);
+		}
 
 		if (!weekSelected && canSelectWeek)
 		{
@@ -304,6 +334,26 @@ class StoryMenuState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			canSelectWeek = false;
 			changeState(core.states.MenuState);
+		}
+
+		super.update(elapsed);
+	}
+
+	override function beatHit()
+	{
+		super.beatHit();
+
+		beats++;
+
+		if (beats % 1 == 0)
+		{
+			lockAngle = -12;
+			lockSize = 1.4;
+		}
+		if (beats % 2 == 0)
+		{
+			lockAngle = 12;
+			lockSize = 1.5;
 		}
 	}
 }

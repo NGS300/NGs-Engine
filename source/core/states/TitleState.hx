@@ -15,6 +15,7 @@ class TitleState extends MusicBeatState
 	var startScale:Float = 0.34;
 	var beatScale:Float = 0.365; // change this var to set how much the logo will bump
 	var scaleTarget:Float = 0.34;
+	var lastBeat:Int = 0;
 
 	static var initialized:Bool = false; // Only play the credits once per session.
 
@@ -150,42 +151,46 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		// logoSpr?.animation.play('bump', true);
-
 		scaleTarget = beatScale;
 
 		if (skippedIntro)
 			return;
-		switch (++sickBeats)
-		{
-			case 2:
-				introSet(['NGS Engine by'], 40);
-			case 4:
-				introPush('Hiro Sora', 40);
-				introPush('KiwiSky', 40);
-			case 5:
-				introClear();
-			case 6:
-				introSet(['Not associated', 'with'], -40);
-			case 8:
-				introPush('Newgrounds', -40);
-			case 9:
-				introClear();
-			case 10:
-				introSet([curShit[0]]);
-			case 12:
-				introPush(curShit[1]);
-			case 13:
-				introClear();
-			case 14:
-				introPush('Friday');
-			case 15:
-				introPush('Night');
-			case 16:
-				introPush('Funkin');
-			case 17:
-				skipIntro();
-		}
+
+		if (curBeat > lastBeat)
+			for (b in lastBeat...curBeat)
+				switch (++sickBeats)
+				{
+					case 2:
+						introSet(['NGS Engine by'], 40);
+					case 4:
+						introPush('Hiro Sora', 40);
+						introPush('KiwiSky', 40);
+					case 5:
+						introClear();
+					case 6:
+						introSet(['Not associated', 'with'], -40);
+					case 8:
+						introPush('Newgrounds', -40);
+					case 9:
+						introClear();
+					case 10:
+						introSet([curShit[0]]);
+					case 12:
+						introPush(curShit[1]);
+					case 13:
+						introClear();
+					case 14:
+						introPush('Friday');
+					case 15:
+						introPush('Night');
+					case 16:
+						introPush('Funkin');
+					case 17:
+						skipIntro();
+				}
+		lastBeat = curBeat;
+
+		trace(curBeat);
 	}
 
 	override function update(elapsed:Float)
