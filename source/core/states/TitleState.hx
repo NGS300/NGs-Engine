@@ -12,7 +12,9 @@ class TitleState extends MusicBeatState
 	var gradDown:FlxSprite;
 	var gradUp:FlxSprite;
 
-	var scaleTarget:Float = 0;
+	var startScale:Float = 0.34;
+	var beatScale:Float = 0.365; // change this var to set how much the logo will bump
+	var scaleTarget:Float = 0.34;
 
 	static var initialized:Bool = false; // Only play the credits once per session.
 
@@ -87,13 +89,12 @@ class TitleState extends MusicBeatState
 		add(gradUp);
 
 		logoSpr = new FlxSprite(250, 142);
-		logoSpr.frames = Paths.atlas(i + 'logos');
-		// logoSpr.setGraphicSize(Std.int(logoSpr.width * 0.6), Std.int(logoSpr.height * 0.6));
+		logoSpr.loadGraphic(Paths.image(i + 'EngineLogo')); // logoSpr.setGraphicSize(Std.int(logoSpr.width * 0.6), Std.int(logoSpr.height * 0.6));
 		logoSpr.scale.set(scaleTarget, scaleTarget);
 		logoSpr.centerOrigin();
 
 		logoSpr.screenCenter();
-		logoSpr.animation.addByPrefix('bump', 'bump0', 24, false);
+		// logoSpr.animation.addByPrefix('bump', 'bump0', 24, false);
 		logoSpr.antialiasing = Settings.data.antialiasing;
 		// logoSpr.animation.play('bump');
 		logoSpr.updateHitbox();
@@ -151,7 +152,7 @@ class TitleState extends MusicBeatState
 		super.beatHit();
 		// logoSpr?.animation.play('bump', true);
 
-		scaleTarget = 0.67;
+		scaleTarget = beatScale;
 
 		if (skippedIntro)
 			return;
@@ -189,7 +190,7 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		scaleTarget = FlxMath.lerp(scaleTarget, 0.6, 0.094);
+		scaleTarget = FlxMath.lerp(scaleTarget, startScale, 0.094);
 		logoSpr.scale.set(scaleTarget, scaleTarget);
 
 		if (FlxG.sound.music != null)
