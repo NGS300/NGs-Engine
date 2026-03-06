@@ -160,32 +160,32 @@ class TitleState extends MusicBeatState
 			for (b in lastBeat...curBeat)
 				switch (++sickBeats)
 				{
-					case 2:
+					case 1:
 						introSet(['NGS Engine by'], 40);
-					case 4:
+					case 3:
 						introPush('Hiro Sora', 40);
 						introPush('KiwiSky', 40);
+					case 4:
+						introClear();
 					case 5:
-						introClear();
-					case 6:
 						introSet(['Not associated', 'with'], -40);
-					case 8:
+					case 7:
 						introPush('Newgrounds', -40);
+					case 8:
+						introClear();
 					case 9:
-						introClear();
-					case 10:
 						introSet([curShit[0]]);
-					case 12:
+					case 11:
 						introPush(curShit[1]);
-					case 13:
+					case 12:
 						introClear();
-					case 14:
+					case 13:
 						introPush('Friday');
-					case 15:
+					case 14:
 						introPush('Night');
-					case 16:
+					case 15:
 						introPush('Funkin');
-					case 17:
+					case 16:
 						skipIntro();
 				}
 		lastBeat = curBeat;
