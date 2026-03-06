@@ -9,9 +9,18 @@ class StoryMenuState extends MusicBeatState
 {
 	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
 
-	var allowedDiffs = ["normal", "hard", "erect"];
-	var allowedModes = ["weeks", "diffs"];
-	var weekIcons = ["gf", "dad", "spooky", "pico", "mom", "senpai"];
+	var allowedDiffs:Array<String> = ["normal", "hard", "erect"];
+	var allowedModes:Array<String> = ["weeks", "diffs"];
+	var weekIcons:Array<String> = ["gf", "dad", "spooky", "pico", "mom", "parents-christmas", "senpai"];
+	var weekColors:Array<Int> = [
+		0xFFA5004D,
+		0xFFAF66CE,
+		0xFFD57E00,
+		0xFFB7D855,
+		0xFFD8558E,
+		0xFF9E3188,
+		0xFFFFAA6F
+	];
 
 	var weekSelected:Bool = false;
 	var curWeek:Int = 0;
@@ -20,11 +29,16 @@ class StoryMenuState extends MusicBeatState
 	var canSelectWeek:Bool = true;
 	var selectedDiff:Bool = false;
 	var isSelectingWeeks:Bool = true;
+	var currentColor:Int;
 
+	var discCenter:FlxSprite;
 	var discSprite:FlxSprite;
 	var tiledBG:FlxBackdrop;
+
 	var grpWeekText:FlxTypedGroup<MenuItem>;
+	var grpLock:FlxTypedGroup<FlxSprite>;
 	var grpDiff:FlxTypedGroup<MenuItem>;
+	var icon:HealthIcon;
 
 	var modeSelectorSprites:Map<String, FlxSprite>;
 
@@ -77,28 +91,50 @@ class StoryMenuState extends MusicBeatState
 		discSprite.centerOffsets();
 
 		discSprite.screenCenter();
-		discSprite.x = FlxG.width - discSprite.width * 0.5 - 16;
-		discSprite.y = -(discSprite.height * 0.5) + 16;
+		discSprite.x = FlxG.width - discSprite.width * 0.5 - 64;
+		discSprite.y = -(discSprite.height * 0.5) + 64;
 		add(discSprite);
 
 		var polyDrawLine:LineStyle = {color: FlxColor.WHITE, thickness: 1};
 		var polyRenderStyle:DrawStyle = {smoothing: true};
-		var discCenter:FlxSprite = new FlxSprite();
+		discCenter = new FlxSprite();
 		discCenter.makeGraphic(126, 126, FlxColor.TRANSPARENT);
 		add(discCenter);
-
 		discCenter.drawEllipse(0, 0, discCenter.width, discCenter.height, polyDrawLine, polyRenderStyle);
-
 		discCenter.scale.set(1.5, 1.5);
 		discCenter.updateHitbox();
-
 		discCenter.centerOrigin();
 		discCenter.centerOffsets();
-
 		discCenter.screenCenter();
-		discCenter.x = FlxG.width - discCenter.width * 0.5 - 16;
-		discCenter.y = -(discCenter.height * 0.5) + 16;
-		trace('${discCenter.x} | ${discCenter.y}');
+		discCenter.x = FlxG.width - discCenter.width * 0.5 - 64;
+		discCenter.y = -(discCenter.height * 0.5) + 64;
+		discCenter.color = weekColors[curWeek];
+		currentColor = discCenter.color;
+
+		var sprTracker:FlxSprite = new FlxSprite(discCenter.x, discCenter.y);
+		sprTracker.makeGraphic(32, 32, FlxColor.RED);
+		sprTracker.updateHitbox();
+		sprTracker.x = FlxG.width - discCenter.width + 8;
+		sprTracker.y = 16;
+		sprTracker.visible = false;
+
+		add(sprTracker);
+
+		var sprGlow:FlxSprite = new FlxSprite();
+		sprGlow.loadGraphic(Paths.image("effects/light"));
+		sprGlow.scale.set(1.8, 1.8);
+		sprGlow.updateHitbox();
+		sprGlow.centerOrigin();
+		sprGlow.centerOffsets();
+		sprGlow.color = 0xFF000000;
+		sprGlow.x = FlxG.width - discCenter.width + 8;
+		sprGlow.y = -64;
+
+		add(sprGlow);
+
+		icon = new HealthIcon(weekIcons[curWeek]);
+		icon.sprTracker = sprTracker;
+		add(icon);
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
@@ -192,6 +228,15 @@ class StoryMenuState extends MusicBeatState
 			index++;
 		}
 
+		icon.animation.play(weekIcons[curWeek]);
+		discCenter.color = weekColors[curWeek];
+
+		var newColor:Int = weekColors[curWeek];
+		if (newColor != currentColor)
+		{
+			FlxTween.cancelTweensOf(discCenter);
+			FlxTween.color(discCenter, 1.3, currentColor, newColor);
+		}
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
@@ -231,6 +276,7 @@ class StoryMenuState extends MusicBeatState
 
 		tiledBG.x -= 20 * elapsed;
 		discSprite.angle -= 40 * elapsed;
+		icon.angle = discSprite.angle;
 
 		if (!weekSelected && canSelectWeek)
 		{
@@ -248,6 +294,16 @@ class StoryMenuState extends MusicBeatState
 				switchMode(-1);
 			else if (controls.UI_LEFT_P)
 				switchMode(1);
+
+			if (controls.ACCEPT)
+				selectWeek();
+		}
+
+		if (controls.BACK && canSelectWeek)
+		{
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			canSelectWeek = false;
+			changeState(core.states.MenuState);
 		}
 	}
 }
